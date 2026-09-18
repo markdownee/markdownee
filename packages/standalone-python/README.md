@@ -37,7 +37,7 @@ Their supported controls differ; see [Python coverage](#python-coverage).
 ## Install
 
 Use Python 3.12 or later. The native alpha requires matching native
-Trafilatura Core `0.1.0a2`. For a source checkout, install both local Python
+Trafilatura Core `0.1.0a5`. For a source checkout, install both local Python
 packages, or install their built wheels together. For published native
 prereleases, select the native version explicitly:
 

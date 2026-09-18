@@ -43,7 +43,7 @@ first build the matching Trafilatura Core wheel with its Python example runner,
 then pass that wheel to this runner:
 
 ```bash
-./run.sh /path/to/trafilaturacore-0.1.0a2-py3-none-any.whl
+./run.sh /path/to/trafilaturacore-0.1.0a5-py3-none-any.whl
 ```
 
 The build requires `uv`, Python 3.12 or newer, and this checkout. Omitting the

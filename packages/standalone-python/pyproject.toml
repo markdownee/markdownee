@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "markdownee"
-version = "0.5.0a3"
+version = "0.5.0a4"
 description = "Native Python crawling and content extraction with Crawlee and Trafilatura Core."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -24,7 +24,7 @@ classifiers = [
 ]
 dependencies = [
   "crawlee[beautifulsoup,playwright,httpx]>=1.10,<2",
-  "trafilaturacore==0.1.0a2",
+  "trafilaturacore==0.1.0a5",
   "markdownify>=1.2,<2",
   "pyvips[binary]>=3.2,<4",
   "pydantic>=2.11,<3",
