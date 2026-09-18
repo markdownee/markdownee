@@ -41,7 +41,7 @@ import {
   formatSecuredHtml,
   type Message,
   prepare,
-} from 'trafilaturacore';
+} from '@markdownee/trafilaturacore';
 import { applyLanguageFilter } from './language.js';
 
 export type {
@@ -65,7 +65,7 @@ export {
   markdownToHtml,
   stripFrontMatter,
 } from '@markdownee/conversion';
-export type { BoilerplateMode } from 'trafilaturacore';
+export type { BoilerplateMode } from '@markdownee/trafilaturacore';
 export type { ConversionFormat, ConversionResult, ConversionResultKey };
 export {
   CONVERSION_FORMAT_RESULT_KEYS,

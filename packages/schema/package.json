@@ -1,6 +1,6 @@
 {
   "name": "@markdownee/schema",
-  "version": "0.5.0-alpha.2",
+  "version": "0.5.0-alpha.3",
   "private": true,
   "description": "Single source of truth for Markdownee input — Zod 4 schema plus the Apify INPUT_SCHEMA generator that compiles it to disk.",
   "type": "module",

@@ -1,6 +1,6 @@
 {
   "name": "@markdownee/conversion",
-  "version": "0.5.0-alpha.2",
+  "version": "0.5.0-alpha.3",
   "private": true,
   "description": "Converts secured semantic HTML into Markdownee's txt, Markdown, readable HTML, and minified HTML output formats.",
   "type": "module",

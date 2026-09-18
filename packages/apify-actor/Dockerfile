@@ -44,7 +44,7 @@ RUN pnpm --filter @markdownee/schema build \
     && pnpm --filter @markdownee/conversion build \
     && pnpm --filter @markdownee/extraction build \
     && pnpm --filter @markdownee/crawler build \
-    && pnpm --filter markdownee build \
+    && pnpm --filter @markdownee/markdownee build \
     && pnpm --filter @markdownee/apify build \
     && pnpm install --config.inject-workspace-packages=true \
     && pnpm --filter @markdownee/apify --prod deploy --config.inject-workspace-packages=true /deploy \

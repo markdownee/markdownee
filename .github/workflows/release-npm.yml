@@ -1,6 +1,6 @@
 name: release-npm
 
-# Publish `markdownee` to npm from one authenticated run.
+# Publish `@markdownee/markdownee` to npm from one authenticated run.
 #
 # Dispatch MUST bind the workflow DEFINITION to the tag:
 #   gh -R markdownee/markdownee workflow run release-npm.yml --ref vX.Y.Z -f tag=vX.Y.Z
@@ -34,6 +34,7 @@ concurrency:
 
 env:
   TAG: ${{ inputs.tag }}
+  PACKAGE_NAME: "@markdownee/markdownee"
   # npm trusted-publishing floors as of 2026-08-03. Never trust the bundled npm.
   NODE_VERSION: "22.23.2"
   NPM_VERSION: "11.5.1"
@@ -98,12 +99,12 @@ jobs:
           version="$(node -p "require('./packages/standalone/package.json').version")"
           [ "v${version}" = "${TAG}" ] \
             || { echo "manifest ${version} != tag ${TAG}" >&2; exit 1; }
-          if npm view "markdownee@${version}" version >/dev/null 2>&1; then
-            echo "markdownee@${version} already exists on npm; versions are permanently reserved" >&2
+          if npm view "${PACKAGE_NAME}@${version}" version >/dev/null 2>&1; then
+            echo "${PACKAGE_NAME}@${version} already exists on npm; versions are permanently reserved" >&2
             exit 1
           fi
           package_exists=false
-          npm view markdownee name >/dev/null 2>&1 && package_exists=true
+          npm view "$PACKAGE_NAME" name >/dev/null 2>&1 && package_exists=true
           if [ "$BOOTSTRAP" = "true" ]; then
             [ "$package_exists" = "false" ] \
               || { echo "bootstrap is allowed only before the package exists" >&2; exit 1; }
@@ -149,7 +150,7 @@ jobs:
         run: |
           set -euo pipefail
           pnpm install
-          pnpm exec turbo run build --filter=markdownee
+          pnpm exec turbo run build --filter=@markdownee/markdownee
 
       - name: Validate public entry points and declaration consumers
         run: node packages/standalone/scripts/verify-package.mjs --force
@@ -169,7 +170,7 @@ jobs:
 
           cd "$RUNNER_TEMP/npm-stage"
           [ "$(ls -1 ./*.tgz | wc -l | tr -d ' ')" -eq 1 ]
-          TARBALL="$(ls -1 markdownee-*.tgz)"
+          TARBALL="$(ls -1 markdownee-markdownee-*.tgz)"
           # List once: `tar | grep -q` dies on SIGPIPE under pipefail.
           LISTING="$(tar -tzf "$TARBALL")"
           for p in package/dist/cli.js package/dist/index.js \
@@ -225,7 +226,7 @@ jobs:
           set -euo pipefail
           remote=""
           for _ in 1 2 3 4 5; do
-            remote="$(npm view "markdownee@${VERSION}" dist.integrity 2>/dev/null || true)"
+            remote="$(npm view "${PACKAGE_NAME}@${VERSION}" dist.integrity 2>/dev/null || true)"
             [ -n "$remote" ] && break
             sleep 10
           done

@@ -1,5 +1,12 @@
-import { CrawlerType, createCrawler, Deduplication, fetch, Save, SaveFormat } from 'markdownee';
-import { Configuration, KeyValueStore } from 'markdownee/storage';
+import {
+  CrawlerType,
+  createCrawler,
+  Deduplication,
+  fetch,
+  Save,
+  SaveFormat,
+} from '@markdownee/markdownee';
+import { Configuration, KeyValueStore } from '@markdownee/markdownee/storage';
 
 // fetch(url, options) crawls exactly one URL (no link-following) and
 // returns the content directly — nothing is persisted. `formats` defaults to

@@ -1,12 +1,12 @@
 import { toLibraryInputSchema, toSharedOutputSchema } from '@markdownee/schema';
 
 /**
- * The `markdownee/schema` entry exposes the shared Zod validators and their
+ * The `@markdownee/markdownee/schema` entry exposes the shared Zod validators and their
  * library projections. `MarkdowneeLibraryInput` validates createCrawler
  * options and `MarkdowneeFetchInput` validates fetch options;
  * `MarkdowneeInput` is the full shared input, including Actor controls.
  * The JSON Schema helpers below derive from the same shared source; the
- * committed `markdownee/schema/*.json` files (shipped via `package.json`
+ * committed `@markdownee/markdownee/schema/*.json` files (shipped via `package.json`
  * `exports`/`files`) are the same projections for `$schema`/SchemaStore and
  * non-TypeScript consumers.
  */

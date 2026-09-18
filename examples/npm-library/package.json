@@ -8,7 +8,7 @@
     "build": "tsc"
   },
   "dependencies": {
-    "markdownee": "workspace:*"
+    "@markdownee/markdownee": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^26.5.1",

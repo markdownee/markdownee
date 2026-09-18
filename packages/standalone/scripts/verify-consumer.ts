@@ -12,15 +12,15 @@ import {
   type ResultDataset,
   Save,
   SaveFormat,
-} from 'markdownee';
-import { buildProgram, runCli } from 'markdownee/cli';
+} from '@markdownee/markdownee';
+import { buildProgram, runCli } from '@markdownee/markdownee/cli';
 import {
   MarkdowneeFetchInput,
   MarkdowneeInput,
   MarkdowneeLibraryInput,
   MarkdowneeOutput,
   type MarkdowneeInputType as SchemaInput,
-} from 'markdownee/schema';
+} from '@markdownee/markdownee/schema';
 import {
   Configuration,
   Dataset,
@@ -28,7 +28,7 @@ import {
   KeyValueStore,
   runExportAction,
   runPurgeAction,
-} from 'markdownee/storage';
+} from '@markdownee/markdownee/storage';
 
 export async function consumePublicPackage(url: string): Promise<void> {
   const input: MarkdowneeInputType = MarkdowneeInput.parse({ startUrls: [{ url }] });
@@ -61,7 +61,7 @@ export async function consumePublicPackage(url: string): Promise<void> {
   await runPurgeAction({ storageDir: './storage' });
   await runCli(buildProgram(), ['node', 'markdownee', '--help']);
 
-  const library = await import('markdownee');
+  const library = await import('@markdownee/markdownee');
   // @ts-expect-error CLI construction belongs to the CLI subpath.
   const rootCli = library.buildProgram;
   // @ts-expect-error Storage operations belong to the storage subpath.

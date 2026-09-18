@@ -34,7 +34,7 @@ for (const entry of ['index', 'cli-api', 'storage', 'schema']) {
         )
       ) {
         // These declarations support root-exported inferred types but remain runtime-only
-        // exports of markdownee/schema. Keep every other forgotten export visible.
+        // exports of @markdownee/markdownee/schema. Keep every other forgotten export visible.
         message.logLevel = ExtractorLogLevel.None;
       }
     },

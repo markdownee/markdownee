@@ -27,7 +27,7 @@ export const SHARED_OUTPUT_SCHEMA_ID = schemaId('output.schema.json');
  * The library's programmatic input surface as a Zod object — the single source
  * for the library-input JSON Schema. Equals `MarkdowneeInput` minus the
  * Apify-only start-URL / named-bucket fields, plus the three library-only knobs.
- * Mirrors `MarkdowneeOptions` in the `markdownee` package
+ * Mirrors `MarkdowneeOptions` in the `@markdownee/markdownee` package
  * (`packages/standalone/src/library.ts`): `startUrls` is passed to `run(urls)`,
  * so it is not part of the options object; `datasetName`/`keyValueStoreName`/
  * `requestQueueName` are an Apify Actor storage concept; `includeHtml`/

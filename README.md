@@ -6,11 +6,11 @@
       <td>
         <img width="220" src="media/cover-mini.svg" alt="Markdownee" />
         <br />
-        <a href="https://www.npmjs.com/package/markdownee"><img src="https://img.shields.io/npm/v/markdownee.svg" alt="npm version" /></a>
+        <a href="https://www.npmjs.com/package/@markdownee/markdownee"><img src="https://img.shields.io/npm/v/%40markdownee%2Fmarkdownee.svg" alt="npm version" /></a>
         <br />
-        <a href="https://www.npmjs.com/package/markdownee"><img src="https://img.shields.io/npm/dm/markdownee.svg" alt="npm downloads" /></a>
+        <a href="https://www.npmjs.com/package/@markdownee/markdownee"><img src="https://img.shields.io/npm/dm/%40markdownee%2Fmarkdownee.svg" alt="npm downloads" /></a>
         <br />
-        <a href="https://github.com/markdownee/markdownee/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/markdownee.svg" alt="license" /></a>
+        <a href="https://github.com/markdownee/markdownee/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/%40markdownee%2Fmarkdownee.svg" alt="license" /></a>
         <h3>Available as:</h3>
         <ul>
           <li>
@@ -24,9 +24,9 @@
             <sub><a href="https://apify.com/markdownee/crawler?fpr=glueo">actor</a>, <a href="https://www.markdownee.com/help/apify/">help</a></sub>
           </li>
           <li>
-            <strong><a href="https://www.npmjs.com/package/markdownee">npm package CLI &amp; lib</a></strong>
+            <strong><a href="https://www.npmjs.com/package/@markdownee/markdownee">npm package CLI &amp; lib</a></strong>
             <br />
-            <sub><a href="https://www.npmjs.com/package/markdownee">package</a>, <a href="https://www.markdownee.com/help/npm/">CLI help</a>, <a href="https://www.markdownee.com/help/npm-lib/">lib help</a></sub>
+            <sub><a href="https://www.npmjs.com/package/@markdownee/markdownee">package</a>, <a href="https://www.markdownee.com/help/npm/">CLI help</a>, <a href="https://www.markdownee.com/help/npm-lib/">lib help</a></sub>
           </li>
         </ul>
       </td>
@@ -64,7 +64,7 @@ to deduplicate results.
 
 **Website & docs:** [markdownee.com](https://www.markdownee.com) · **Try it:**
 [Apify Actor](https://apify.com/markdownee/crawler?fpr=glueo) · **Install:**
-[npm](https://www.npmjs.com/package/markdownee) ·
+[npm](https://www.npmjs.com/package/@markdownee/markdownee) ·
 [PyPI (alpha)](https://pypi.org/project/markdownee/)
 
 ## Contents
@@ -97,7 +97,7 @@ packages/
 ## Quick start
 
 ```bash
-npm install markdownee
+npm install @markdownee/markdownee
 npx markdownee fetch https://www.iana.org/help/example-domains \
   --crawler-type cheerio
 ```
@@ -255,7 +255,7 @@ In Node.js, call `fetch` for one URL or create a crawler and pass a URL
 list to `run`. This example uses in-memory results:
 
 ```typescript
-import { createCrawler, fetch } from 'markdownee';
+import { createCrawler, fetch } from '@markdownee/markdownee';
 
 // One page, nothing persisted
 const { markdown } = await fetch('https://example.com/');

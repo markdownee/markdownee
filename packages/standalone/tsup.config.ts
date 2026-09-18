@@ -3,13 +3,13 @@ import path from 'node:path';
 import { defineConfig } from 'tsup';
 
 /**
- * The published `markdownee` tarball must carry no `@markdownee/*`
+ * The published `@markdownee/markdownee` tarball must carry no `@markdownee/*`
  * runtime dependencies (the core packages are internal-only, `private: true`),
  * so this bundles them into `dist`. Public packages (crawlee, playwright,
- * commander, turndown, `trafilaturacore`, …) stay external regular
+ * commander, turndown, `@markdownee/trafilaturacore`, …) stay external regular
  * dependencies.
  *
- * `trafilaturacore` is one of those externals: an ordinary published npm package
+ * `@markdownee/trafilaturacore` is one of those externals: an ordinary published npm package
  * of platform-independent JavaScript. It carries no native addon, and neither
  * does Markdownee, so nothing here stages a `.node` file.
  */
@@ -35,7 +35,7 @@ export default defineConfig({
   // check — stays in the dist/cli.js entry chunk, so the bin-path comparison
   // still works.
   splitting: true,
-  noExternal: [/^@markdownee\//],
+  noExternal: [/^@markdownee\/(conversion|crawler|extraction|schema)$/],
   banner: {
     // Bundled code may reach CJS-only externals (turndown, domino) at runtime;
     // ESM output has no `require` without this shim. The aliased import avoids

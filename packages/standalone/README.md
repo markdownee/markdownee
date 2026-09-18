@@ -6,11 +6,11 @@
       <td>
         <img width="220" src="https://www.markdownee.com/media/cover-mini.svg" alt="Markdownee" />
         <br />
-        <a href="https://www.npmjs.com/package/markdownee"><img src="https://img.shields.io/npm/v/markdownee.svg" alt="npm version" /></a>
+        <a href="https://www.npmjs.com/package/@markdownee/markdownee"><img src="https://img.shields.io/npm/v/%40markdownee%2Fmarkdownee.svg" alt="npm version" /></a>
         <br />
-        <a href="https://www.npmjs.com/package/markdownee"><img src="https://img.shields.io/npm/dm/markdownee.svg" alt="npm downloads" /></a>
+        <a href="https://www.npmjs.com/package/@markdownee/markdownee"><img src="https://img.shields.io/npm/dm/%40markdownee%2Fmarkdownee.svg" alt="npm downloads" /></a>
         <br />
-        <a href="https://github.com/markdownee/markdownee/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/markdownee.svg" alt="license" /></a>
+        <a href="https://github.com/markdownee/markdownee/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/%40markdownee%2Fmarkdownee.svg" alt="license" /></a>
         <h3>Also available as:</h3>
         <ul>
           <li>
@@ -128,7 +128,7 @@ ReaderLM model are distinct products.
 ## Installation
 
 ```bash
-npm install markdownee        # local: library use
+npm install @markdownee/markdownee # local: library use
 npm install -g markdownee     # global: the CLI on your PATH
 npx playwright install chromium  # browser crawlers only
 ```
@@ -547,8 +547,8 @@ their corresponding `playwright-*` values. Cheerio has the same name in both.
 Create a crawler and run a URL list:
 
 ```typescript
-import { createCrawler, Deduplication, Save } from 'markdownee';
-import { Configuration, KeyValueStore } from 'markdownee/storage';
+import { createCrawler, Deduplication, Save } from '@markdownee/markdownee';
+import { Configuration, KeyValueStore } from '@markdownee/markdownee/storage';
 
 const crawler = createCrawler({
   save: [Save.TxtKvs],
@@ -599,7 +599,7 @@ Options are validated and copied when constructing the crawler. Each `run`
 owns its queue, deduplication state, and logger; repeated or concurrent calls can
 process the same URL. Calls without `storageDir` use memory storage, except that
 explicit image `save` persists image bytes in the CLI's resolved default storage.
-Read those image keys using `KeyValueStore` from `markdownee/storage`. With a
+Read those image keys using `KeyValueStore` from `@markdownee/markdownee/storage`. With a
 directory, result records accumulate there; callers sharing a directory share
 its stored data. Dataset JSON/CSV exports require an explicit store. Invalid
 options and run-level failures throw; partial page failures resolve.
@@ -612,7 +612,7 @@ SOCKS5 proxies. Apify Proxy integration belongs to the Actor.
 Return one URL's formats without persistent output:
 
 ```typescript
-import { CrawlerType, fetch, SaveFormat } from 'markdownee';
+import { CrawlerType, fetch, SaveFormat } from '@markdownee/markdownee';
 
 // formats default: ['markdown']
 const { markdown } = await fetch('https://example.com');
@@ -633,8 +633,9 @@ through `formats` instead. Image `save` is rejected by this return-only API.
 Raw strings and alias-object members serialize to the same wire values.
 
 The root entry provides extraction and its types and vocabulary. Import CLI
-construction from `markdownee/cli`, storage tools from `markdownee/storage`,
-and Zod validators from `markdownee/schema`. The validators
+construction from `@markdownee/markdownee/cli`, storage tools from
+`@markdownee/markdownee/storage`, and Zod validators from
+`@markdownee/markdownee/schema`. The validators
 `MarkdowneeLibraryInput` and `MarkdowneeFetchInput` own the corresponding
 option defaults and validation. Importing these entry points does not execute a CLI command.
 
@@ -643,7 +644,7 @@ option defaults and validation. Importing these entry points does not execute a 
 The storage commands also have library functions:
 
 ```typescript
-import { runExportAction, runPurgeAction } from 'markdownee/storage';
+import { runExportAction, runPurgeAction } from '@markdownee/markdownee/storage';
 
 const exported = await runExportAction({
   outputDir: './out',
@@ -674,7 +675,7 @@ import {
   Dataset,
   KeyValueStore,
   Configuration,
-} from 'markdownee/storage';
+} from '@markdownee/markdownee/storage';
 
 // Point Crawlee at the dir the CLI wrote to (./storage, else the XDG
 // dir); resolveStorageDir() finds it — the same rule the CLI uses.

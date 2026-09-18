@@ -4,11 +4,11 @@
       <td>
         <img width="220" src="https://www.markdownee.com/media/cover-mini.svg" alt="Markdownee" />
         <br />
-        <a href="https://www.npmjs.com/package/markdownee"><img src="https://img.shields.io/npm/v/markdownee.svg" alt="npm version" /></a>
+        <a href="https://www.npmjs.com/package/@markdownee/markdownee"><img src="https://img.shields.io/npm/v/%40markdownee%2Fmarkdownee.svg" alt="npm version" /></a>
         <br />
-        <a href="https://www.npmjs.com/package/markdownee"><img src="https://img.shields.io/npm/dm/markdownee.svg" alt="npm downloads" /></a>
+        <a href="https://www.npmjs.com/package/@markdownee/markdownee"><img src="https://img.shields.io/npm/dm/%40markdownee%2Fmarkdownee.svg" alt="npm downloads" /></a>
         <br />
-        <a href="https://github.com/markdownee/markdownee/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/markdownee.svg" alt="license" /></a>
+        <a href="https://github.com/markdownee/markdownee/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/%40markdownee%2Fmarkdownee.svg" alt="license" /></a>
         <h3>Also available as:</h3>
         <ul>
           <li>
@@ -17,9 +17,9 @@
             <a href="https://www.markdownee.com/">playground</a>, <a href="https://www.markdownee.com/help/web/">help</a>
           </li>
           <li>
-            <strong><a href="https://www.npmjs.com/package/markdownee">npm package CLI &amp; lib</a></strong>
+            <strong><a href="https://www.npmjs.com/package/@markdownee/markdownee">npm package CLI &amp; lib</a></strong>
             <br />
-            <a href="https://www.npmjs.com/package/markdownee">package</a>, <a href="https://www.markdownee.com/help/npm/">CLI help</a>, <a href="https://www.markdownee.com/help/npm-lib/">lib help</a>
+            <a href="https://www.npmjs.com/package/@markdownee/markdownee">package</a>, <a href="https://www.markdownee.com/help/npm/">CLI help</a>, <a href="https://www.markdownee.com/help/npm-lib/">lib help</a>
           </li>
           <li>
             <strong><a href="https://github.com/markdownee/markdownee">Source code on GitHub</a></strong>

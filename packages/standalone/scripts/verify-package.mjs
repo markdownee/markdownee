@@ -117,10 +117,10 @@ execFileSync(
       const storageOptions = configuration.get('storageClientOptions');
       const purgeOnStart = configuration.get('purgeOnStart');
       process.argv.push('not-a-markdownee-command');
-      const library = await import('markdownee');
-      const cli = await import('markdownee/cli');
-      const storage = await import('markdownee/storage');
-      const schema = await import('markdownee/schema');
+      const library = await import('@markdownee/markdownee');
+      const cli = await import('@markdownee/markdownee/cli');
+      const storage = await import('@markdownee/markdownee/storage');
+      const schema = await import('@markdownee/markdownee/schema');
       assert.equal(typeof library.fetch, 'function');
       assert.equal(typeof library.createCrawler, 'function');
       for (const name of ['buildProgram', 'isMainEntry', 'runCli']) {

@@ -1,6 +1,6 @@
 {
-  "name": "markdownee",
-  "version": "0.5.0-alpha.2",
+  "name": "@markdownee/markdownee",
+  "version": "0.5.0-alpha.3",
   "description": "Standalone CLI and npm library for Markdownee. Built on Trafilatura Core and Crawlee.",
   "keywords": [
     "web-scraping",
@@ -83,7 +83,7 @@
     "prettier": "^3.9.6",
     "sharp": "^0.35.4",
     "svgo": "^4.1.0",
-    "trafilaturacore": "0.1.0-alpha.3",
+    "@markdownee/trafilaturacore": "0.1.0-alpha.4",
     "turndown": "^7.2.4",
     "yaml": "^2.9.0",
     "zod": "^4.6.1"

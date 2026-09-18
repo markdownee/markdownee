@@ -33,7 +33,7 @@ for (const extra of [
   'node_modules/@markdownee/gen-md-regions',
   'node_modules/@markdownee/generated-unit-tests',
   'node_modules/@markdownee/opencode-sync',
-  'node_modules/markdownee',
+  'node_modules/@markdownee/markdownee',
   'node_modules/@tools',
 ]) {
   await rm(resolve(outputDir, extra), { recursive: true, force: true });
