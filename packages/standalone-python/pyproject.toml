@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "markdownee"
-version = "0.5.0a4"
+version = "0.5.0a5"
 description = "Native Python crawling and content extraction with Crawlee and Trafilatura Core."
 readme = "README.md"
 requires-python = ">=3.12"

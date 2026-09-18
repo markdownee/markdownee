@@ -1,6 +1,6 @@
 {
   "name": "@markdownee/apify",
-  "version": "0.5.0-alpha.4",
+  "version": "0.5.0-alpha.5",
   "private": true,
   "description": "Apify Actor that crawls websites and extracts main-content text. Built on Trafilatura Core and Crawlee.",
   "type": "module",
