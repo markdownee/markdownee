@@ -1,0 +1,66 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "markdownee"
+version = "0.5.0a2"
+description = "Native Python crawling and content extraction with Crawlee and Trafilatura Core."
+readme = "README.md"
+requires-python = ">=3.12"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+authors = [{ name = "glueo", email = "company@glueo.com" }]
+keywords = ["web-scraping", "crawler", "content-extraction", "trafilatura", "crawlee", "markdown"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Operating System :: OS Independent",
+  "Topic :: Internet :: WWW/HTTP :: Indexing/Search",
+  "Typing :: Typed",
+]
+dependencies = [
+  "crawlee[beautifulsoup,playwright,httpx]>=1.10,<2",
+  "trafilaturacore==0.1.0a2",
+  "markdownify>=1.2,<2",
+  "pyvips[binary]>=3.2,<4",
+  "pydantic>=2.11,<3",
+  "lxml>=6,<7",
+]
+
+[project.optional-dependencies]
+test = ["build", "hatchling", "pytest>=9", "pytest-asyncio>=1", "ruff>=0.16"]
+
+[project.urls]
+Homepage = "https://www.markdownee.com"
+Documentation = "https://www.markdownee.com/help/pypi/"
+Repository = "https://github.com/markdownee/markdownee"
+Issues = "https://github.com/markdownee/markdownee/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/markdownee"]
+exclude = ["src/markdownee/_vendor/**"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src", "pyproject.toml", "README.md", "LICENSE", "NOTICE"]
+exclude = ["src/markdownee/_vendor/**", "/temp/**"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "S"]
+ignore = ["S101", "S603", "S607"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+asyncio_mode = "auto"
+addopts = "-q"

@@ -1,0 +1,243 @@
+name: release-npm
+
+# Publish `markdownee` to npm from one authenticated run.
+#
+# Dispatch MUST bind the workflow DEFINITION to the tag:
+#   gh -R markdownee/markdownee workflow run release-npm.yml --ref vX.Y.Z -f tag=vX.Y.Z
+# `--ref <tag>` makes GitHub read this file FROM the tag, so `github.workflow_ref` ends
+# `@refs/tags/vX.Y.Z` and `github.sha` is the released commit. The guard job below rejects any other
+# shape, which is what replaces the old unverifiable free-text `ref` checkout.
+#
+# The filename and the `npm` environment are bound to the npm trusted-publisher configuration —
+# renaming either silently breaks authentication.
+#
+# Authored in tools; see @/directives/dev/native-artifact-provenance.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag (vX.Y.Z). Dispatch with --ref <the same tag>."
+        required: true
+        type: string
+      bootstrap:
+        description: "Use the one-time npm token only for the package's first publish."
+        required: false
+        default: false
+        type: boolean
+
+permissions: {}
+
+concurrency:
+  group: release-npm-${{ inputs.tag }}
+  cancel-in-progress: false
+
+env:
+  TAG: ${{ inputs.tag }}
+  # npm trusted-publishing floors as of 2026-08-03. Never trust the bundled npm.
+  NODE_VERSION: "22.23.2"
+  NPM_VERSION: "11.5.1"
+
+jobs:
+  guard:
+    name: bind the run to an immutable definition
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Require workflow-ref / requested-input equality
+        shell: bash
+        env:
+          TAG: ${{ inputs.tag }}
+          WORKFLOW_REF: ${{ github.workflow_ref }}
+          REF: ${{ github.ref }}
+        run: |
+          set -euo pipefail
+          [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-(alpha|beta|rc)\.[0-9]+)?$ ]] || exit 1
+          expected="${GITHUB_REPOSITORY}/.github/workflows/release-npm.yml@refs/tags/${TAG}"
+          if [ "$WORKFLOW_REF" != "$expected" ] || [ "$REF" != "refs/tags/${TAG}" ]; then
+            echo "workflow_ref=${WORKFLOW_REF}" >&2
+            echo "expected    =${expected}" >&2
+            echo "Dispatch with: gh -R ${GITHUB_REPOSITORY} workflow run release-npm.yml --ref ${TAG} -f tag=${TAG}" >&2
+            exit 1
+          fi
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Require the tag to resolve to the checked-out commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          [ "$(git rev-parse "refs/tags/${TAG}^{commit}")" = "$GITHUB_SHA" ]
+
+      - name: Require a native-artifact-free release tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          bad=0
+          while IFS= read -r -d '' rel; do
+            case "$(printf '%s' "$rel" | tr '[:upper:]' '[:lower:]')" in
+              *.node|*.wasm|*.so|*.dylib|*.dll|*.exe|*.a|*.o|*.pyd|*.zip|*.jar|*.whl|*.tgz|*.tar|*.tar.gz|*.crate)
+                echo "PROHIBITED in release tree: $rel" >&2; bad=1 ;;
+            esac
+          done < <(git ls-files -z)
+          [ "$bad" -eq 0 ]
+
+      - id: version
+        name: Require manifest / tag / registry consistency
+        shell: bash
+        env:
+          BOOTSTRAP: ${{ inputs.bootstrap }}
+        run: |
+          set -euo pipefail
+          version="$(node -p "require('./packages/standalone/package.json').version")"
+          [ "v${version}" = "${TAG}" ] \
+            || { echo "manifest ${version} != tag ${TAG}" >&2; exit 1; }
+          if npm view "markdownee@${version}" version >/dev/null 2>&1; then
+            echo "markdownee@${version} already exists on npm; versions are permanently reserved" >&2
+            exit 1
+          fi
+          package_exists=false
+          npm view markdownee name >/dev/null 2>&1 && package_exists=true
+          if [ "$BOOTSTRAP" = "true" ]; then
+            [ "$package_exists" = "false" ] \
+              || { echo "bootstrap is allowed only before the package exists" >&2; exit 1; }
+          else
+            [ "$package_exists" = "true" ] \
+              || { echo "the first publish requires bootstrap=true" >&2; exit 1; }
+          fi
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+
+  publish:
+    name: publish to npm
+    needs: guard
+    runs-on: ubuntu-24.04
+    environment: npm
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Re-assert the tag / SHA binding on this runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          [ "$(git rev-parse "refs/tags/${TAG}^{commit}")" = "$GITHUB_SHA" ]
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          package-manager-cache: false
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Pin npm to the trusted-publishing floor
+        run: npm install -g "npm@${NPM_VERSION}" && npm --version
+
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+
+      - name: Build the release bundle
+        run: |
+          set -euo pipefail
+          pnpm install
+          pnpm exec turbo run build --filter=markdownee
+
+      - name: Validate public entry points and declaration consumers
+        run: node packages/standalone/scripts/verify-package.mjs --force
+
+      - name: Pack ONCE, then inspect and hash that exact tarball
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/npm-stage"
+          (
+            cd packages/standalone
+            npm pkg delete devDependencies      # workspace:* specifiers never ship
+            npm pack --pack-destination "$RUNNER_TEMP/npm-stage"
+          )
+          # That manifest edit must be the only working-tree change.
+          [ "$(git diff --name-only)" = "packages/standalone/package.json" ]
+
+          cd "$RUNNER_TEMP/npm-stage"
+          [ "$(ls -1 ./*.tgz | wc -l | tr -d ' ')" -eq 1 ]
+          TARBALL="$(ls -1 markdownee-*.tgz)"
+          # List once: `tar | grep -q` dies on SIGPIPE under pipefail.
+          LISTING="$(tar -tzf "$TARBALL")"
+          for p in package/dist/cli.js package/dist/index.js \
+                   package/dist/THIRD-PARTY-NOTICES.txt package/dist/LICENSE package/dist/NOTICE package/README.md; do
+            grep -qx "$p" <<<"$LISTING" || { echo "tarball is missing $p" >&2; exit 1; }
+          done
+          # The engine is pure TypeScript: no packed file may be a native executable artifact.
+          [ "$(grep -cE '\.(node|wasm|so|dylib|dll|exe)$' <<<"$LISTING" || true)" -eq 0 ]
+          if tar -xzOf "$TARBALL" package/package.json | grep -q 'workspace:'; then
+            echo "packed manifest still carries a workspace: specifier" >&2
+            exit 1
+          fi
+
+          shasum -a 256 "$TARBALL" | tee tarball.sha256
+          printf 'sha512-%s\n' "$(openssl dgst -sha512 -binary "$TARBALL" | openssl base64 -A)" \
+            | tee tarball.integrity
+          echo "TARBALL=$RUNNER_TEMP/npm-stage/$TARBALL" >> "$GITHUB_ENV"
+
+      - uses: actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373 # v4.1.1
+        with:
+          subject-path: ${{ env.TARBALL }}
+
+      - name: Publish that exact tarball
+        shell: bash
+        env:
+          BOOTSTRAP: ${{ inputs.bootstrap }}
+          NODE_AUTH_TOKEN: ${{ inputs.bootstrap && secrets.NPM_BOOTSTRAP_TOKEN || '' }}
+        run: |
+          set -euo pipefail
+          if [ "$BOOTSTRAP" = "true" ]; then
+            [ -n "${NODE_AUTH_TOKEN:-}" ] \
+              || { echo "NPM_BOOTSTRAP_TOKEN is required for the first publish" >&2; exit 1; }
+          else
+            unset NODE_AUTH_TOKEN
+          fi
+          dist_tag=latest
+          case "$TAG" in
+            *-alpha.*) dist_tag=alpha ;;
+            *-beta.*) dist_tag=beta ;;
+            *-rc.*) dist_tag=rc ;;
+          esac
+          # Publish from the staging directory, which has no package.json, so no manifest lifecycle
+          # script can run. `prepublishOnly` in the release manifest stays a backstop against an
+          # ordinary directory publish; it is NOT protection against publishing a crafted tarball.
+          cd "$RUNNER_TEMP/npm-stage"
+          npm publish "$TARBALL" --provenance --access public --tag "$dist_tag"
+
+      - name: Require the registry to hold the exact bytes that were inspected
+        shell: bash
+        env:
+          VERSION: ${{ needs.guard.outputs.version }}
+        run: |
+          set -euo pipefail
+          remote=""
+          for _ in 1 2 3 4 5; do
+            remote="$(npm view "markdownee@${VERSION}" dist.integrity 2>/dev/null || true)"
+            [ -n "$remote" ] && break
+            sleep 10
+          done
+          expected="$(cat "$RUNNER_TEMP/npm-stage/tarball.integrity")"
+          [ "$remote" = "$expected" ] \
+            || { echo "published integrity ${remote} != inspected ${expected}" >&2; exit 1; }
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: release-evidence-npm-${{ inputs.tag }}
+          if-no-files-found: error
+          retention-days: 90
+          path: |
+            ${{ runner.temp }}/npm-stage/tarball.sha256
+            ${{ runner.temp }}/npm-stage/tarball.integrity

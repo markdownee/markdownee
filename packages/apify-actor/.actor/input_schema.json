@@ -1,0 +1,461 @@
+{
+  "title": "Markdownee",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "startUrls": {
+      "title": "Start URLs",
+      "type": "array",
+      "description": "URLs to extract content from",
+      "editor": "requestListSources",
+      "prefill": [
+        {
+          "url": "https://blog.apify.com/what-is-web-scraping/"
+        }
+      ],
+      "minItems": 1
+    },
+    "crawlerType": {
+      "sectionCaption": "Crawler settings",
+      "title": "Crawler type",
+      "type": "string",
+      "description": "Select how pages are fetched. playwright-adaptive uses browser rendering by default; a positive renderingTypeDetectionRatio enables detection for HTTP-only fetching. Choose an explicit Playwright browser or cheerio for HTTP requests without JavaScript execution.",
+      "editor": "select",
+      "default": "playwright-adaptive",
+      "enum": ["playwright-adaptive", "playwright-firefox", "playwright-chromium", "cheerio"],
+      "enumTitles": [
+        "Adaptive switching (Recommended)",
+        "Headless browser (Firefox+Playwright)",
+        "Headless browser (Chromium+Playwright)",
+        "Raw HTTP client (Cheerio)"
+      ]
+    },
+    "renderingTypeDetectionRatio": {
+      "title": "Rendering type detection",
+      "type": "number",
+      "description": "For the adaptive crawler, set the fraction of pages sampled to determine whether browser rendering is needed (0–1). The default 0 disables detection and uses the browser. With detection enabled, an HTTP fetch may miss content populated by JavaScript.",
+      "editor": "number",
+      "default": 0,
+      "minimum": 0,
+      "maximum": 1
+    },
+    "markdownDiscovery": {
+      "title": "Markdown discovery",
+      "type": "string",
+      "description": "Choose how to find a Markdown representation published by the origin. An accepted representation supplies content for all requested formats. off (default) leaves HTML fetching unchanged. alternate follows same-origin Markdown links advertised in a <link rel=\"alternate\" type=\"text/markdown\"> element or Link response header. negotiate also requests text/markdown through Accept, with a refetch when needed. probe additionally tries a .md sibling URL. Discovery can attempt three alternates, one negotiated refetch, and one sibling; robots.txt checks can add a request per origin. Per-origin budgets limit unsuccessful attempts. Available steps depend on the crawler path. Rejected or unavailable representations fall back to HTML extraction.",
+      "editor": "select",
+      "default": "off",
+      "enum": ["off", "alternate", "negotiate", "probe"],
+      "enumTitles": [
+        "Off — use HTML extraction",
+        "Follow advertised Markdown links",
+        "Also request Markdown with Accept",
+        "Also try a .md sibling"
+      ]
+    },
+    "globs": {
+      "title": "Include URLs (globs)",
+      "type": "array",
+      "description": "Glob patterns matching URLs of pages that will be included in crawling. Setting this option allows you to customize the crawling scope. For example `https://{store,docs}.example.com/**` lets the crawler access all URLs starting with `https://store.example.com/` or `https://docs.example.com/`.",
+      "editor": "globs",
+      "default": []
+    },
+    "exclude": {
+      "title": "Exclude URLs (globs)",
+      "type": "array",
+      "description": "Glob patterns matching URLs of pages that will be excluded from crawling. Note that this affects only links found on pages, but not Start URLs, which are always crawled.",
+      "editor": "globs",
+      "default": []
+    },
+    "selector": {
+      "title": "Link Selector",
+      "type": "string",
+      "description": "CSS selector for links to enqueue. Leave empty to disable link enqueueing.",
+      "editor": "textfield",
+      "default": ""
+    },
+    "keepUrlFragment": {
+      "title": "Keep URL fragment",
+      "type": "boolean",
+      "description": "URL fragments (the parts of URL after a #) are not considered when the scraper determines whether a URL has already been visited. Turn this on to treat URLs with different fragments as different pages.",
+      "editor": "checkbox",
+      "default": false
+    },
+    "useSitemaps": {
+      "title": "Use sitemaps",
+      "type": "boolean",
+      "description": "If enabled, the crawler looks for sitemap.xml at the root of each start URL domain and enqueues matching URLs from it in addition to link-following.",
+      "editor": "checkbox",
+      "default": false
+    },
+    "deduplication": {
+      "title": "Deduplication",
+      "type": "string",
+      "description": "Deduplication level applied on top of Crawlee's built-in URL deduplication. standard (default): skip pages whose <link rel=\"canonical\"> was already extracted, across all handler types. aggressive: also skip pages whose extracted text content matches a previously extracted page. minimal: disable additional deduplication — only Crawlee's built-in URL dedup remains active.",
+      "editor": "select",
+      "default": "standard",
+      "enum": ["minimal", "standard", "aggressive"],
+      "enumTitles": [
+        "Minimal — Crawlee URL dedup only",
+        "Standard — + canonical URL",
+        "Aggressive — + content hash"
+      ]
+    },
+    "respectRobotsTxtFile": {
+      "title": "Respect robots.txt",
+      "type": "boolean",
+      "description": "If enabled, the crawler will consult the robots.txt file for each domain before crawling pages.",
+      "editor": "checkbox",
+      "default": false
+    },
+    "initialCookies": {
+      "title": "Initial cookies",
+      "type": "array",
+      "description": "Cookies that will be pre-set to all pages the scraper opens. This is useful for pages that require login. The value is expected to be a JSON array of objects with `name` and `value` properties. For example: \n\n```json\n[\n  {\n    \"name\": \"cookieName\",\n    \"value\": \"cookieValue\",\n    \"path\": \"/\",\n    \"domain\": \".example.com\"\n  }\n]\n```\n\nYou can use the [EditThisCookie](https://docs.apify.com/academy/tools/edit-this-cookie) browser extension to copy browser cookies in this format, and paste it here.\n\nNote that the value is secret and encrypted to protect your login cookies.",
+      "editor": "json",
+      "prefill": [],
+      "isSecret": true
+    },
+    "customHttpHeaders": {
+      "title": "Custom HTTP headers",
+      "type": "object",
+      "description": "HTTP headers that will be added to all requests made by the crawler. This is useful for setting custom authentication headers or other headers required by the target website. The value is expected to be a JSON object with header names as keys and header values as values. For example: `{ \"Authorization\": \"Bearer token123\", \"X-Custom-Header\": \"value\" }`.",
+      "editor": "json",
+      "prefill": {}
+    },
+    "maxRequestsPerCrawl": {
+      "title": "Max requests per crawl",
+      "type": "integer",
+      "description": "Maximum number of requests the crawler will handle. Counts handled page outcomes (successes and final failures), including start URLs and pagination pages. The crawler automatically finishes after reaching this number. 0 means unlimited.",
+      "editor": "number",
+      "default": 0,
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "maxResultsPerCrawl": {
+      "title": "Max results",
+      "type": "integer",
+      "description": "Maximum number of results that will be saved to dataset. The scraper will terminate after reaching this number. 0 means unlimited.",
+      "editor": "number",
+      "default": 0,
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "unit": "results"
+    },
+    "maxCrawlDepth": {
+      "title": "Max crawling depth",
+      "type": "integer",
+      "description": "Maximum link depth from Start URLs. Pages discovered further from start URLs than this limit will not be crawled. 0 means unlimited.",
+      "editor": "number",
+      "default": 0,
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "initialConcurrency": {
+      "title": "Initial concurrency",
+      "type": "integer",
+      "description": "Initial number of browser pages or HTTP clients running in parallel. Crawlee auto-scales up to maxConcurrency. 0 lets Crawlee pick the default.",
+      "editor": "number",
+      "default": 0,
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "maxConcurrency": {
+      "title": "Max concurrency",
+      "type": "integer",
+      "description": "Maximum number of browser pages running in parallel. Kept low by default because the browser crawler cannot abort in-flight pages, so concurrency is the only hard cap on peak memory — large pages can exhaust memory at higher values. Raise it for lightweight pages or the HTTP (cheerio) crawler. This setting also avoids overloading target websites and getting blocked.",
+      "editor": "number",
+      "default": 3,
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "maxRequestRetries": {
+      "title": "Max request retries",
+      "type": "integer",
+      "description": "Maximum number of retries for failed requests on network, proxy, or server errors.",
+      "editor": "number",
+      "default": 3,
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "mode": {
+      "sectionCaption": "Content extraction",
+      "title": "Extraction mode",
+      "type": "string",
+      "description": "Choose the content-selection policy. precision favors less boilerplate at the risk of omitted content; recall retains more content and may include clutter. balanced is the default. keep cleans the whole document without main-content selection.",
+      "editor": "select",
+      "default": "balanced",
+      "enum": ["precision", "balanced", "recall", "keep"],
+      "enumTitles": [
+        "Precision (less noise)",
+        "Balanced",
+        "Recall (more content)",
+        "Keep boilerplate (clean HTML only)"
+      ]
+    },
+    "imageHandling": {
+      "title": "Image handling",
+      "type": "string",
+      "description": "What becomes of images in the extracted content. exclude (default) removes image structures entirely, including their captions. alt-text replaces each image with its textual stand-in (alt text, falling back to figcaption, aria-label, or title) — no URL, no bytes. resolved-url keeps each image as one clean tag whose src is the resolved absolute image URL (lazy-load and srcset variants collapsed); nothing is downloaded. The save MODE additionally downloads the image bytes, re-encodes them, and stores them in the key-value store, referencing them from the results — not to be confused with the save TOKENS option, which routes output formats to destinations.",
+      "editor": "select",
+      "default": "exclude",
+      "enum": ["exclude", "alt-text", "resolved-url", "save"],
+      "enumTitles": [
+        "Exclude images",
+        "Replace with alt text",
+        "Keep with resolved URLs",
+        "Save to key-value store"
+      ]
+    },
+    "maxImageEdge": {
+      "title": "Max image edge",
+      "type": "integer",
+      "description": "Long-edge pixel cap for images stored by the save image-handling mode: larger images are downscaled so their longer side is at most this many pixels (never upscaled). 0 disables the cap. Ignored unless imageHandling is save.",
+      "editor": "number",
+      "default": 1568,
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "rasterizeSvg": {
+      "title": "Rasterize SVG",
+      "type": "boolean",
+      "description": "For SVG images stored by the save image-handling mode: store a rasterized PNG instead of the sanitized SVG source (vision models accept no SVG). Disable to store the sanitized SVG source. Ignored unless imageHandling is save.",
+      "editor": "checkbox",
+      "default": true
+    },
+    "linkHandling": {
+      "title": "Link handling",
+      "type": "string",
+      "description": "What becomes of hyperlinks in the extracted content. include (default) renders links inline. exclude unwraps each link — the anchor text survives, the URL is dropped.",
+      "editor": "select",
+      "default": "include",
+      "enum": ["include", "exclude"],
+      "enumTitles": ["Include hyperlinks", "Exclude links (keep anchor text)"]
+    },
+    "tableHandling": {
+      "title": "Table handling",
+      "type": "string",
+      "description": "What becomes of tables in the extracted content. include (default) renders tables. exclude discards each table subtree entirely, including its cell text.",
+      "editor": "select",
+      "default": "include",
+      "enum": ["include", "exclude"],
+      "enumTitles": ["Include tables", "Exclude tables (drop subtree incl. text)"]
+    },
+    "commentHandling": {
+      "title": "Comment handling",
+      "type": "string",
+      "description": "What becomes of user-comment sections (forum or blog comments — NOT <!-- --> HTML markup) in the extracted content. include keeps detected comment containers; exclude removes them before output serialization.",
+      "editor": "select",
+      "default": "include",
+      "enum": ["include", "exclude"],
+      "enumTitles": ["Include comment sections", "Exclude comment sections"]
+    },
+    "languageCode": {
+      "title": "Language",
+      "type": "string",
+      "description": "Filter extracted content by language code (e.g. \"en\"). Leave empty to accept any language.",
+      "editor": "textfield",
+      "default": ""
+    },
+    "outputLayout": {
+      "title": "Output layout",
+      "type": "string",
+      "description": "Choose the structure surrounding generated content: minimal provides TXT/Markdown bodies and HTML fragments; standard adds ordinary metadata, front matter, and complete HTML documents; enhanced includes additional allowlisted metadata and crawl information. Readable HTML and Minified HTML use the same layout.",
+      "editor": "select",
+      "default": "minimal",
+      "enum": ["minimal", "standard", "enhanced"],
+      "enumTitles": ["Minimal", "Standard", "Enhanced"]
+    },
+    "save": {
+      "sectionCaption": "Output settings",
+      "title": "Save",
+      "type": "array",
+      "description": "What to save and where, as `format-destination` tokens. Format is one of `txt`, `markdown`, `html`, `minified-html`, `original` (raw page HTML before extraction); destination is `dataset` (inline in the dataset record) or `kvs` (a blob in the key-value store). List a format twice to save it to both, e.g. `markdown-dataset markdown-kvs`. Saving generated or original HTML (large content) to the dataset is not recommended — it risks out-of-memory on large pages; prefer `kvs`.",
+      "editor": "select",
+      "default": ["markdown-kvs"],
+      "items": {
+        "type": "string",
+        "enum": [
+          "txt-dataset",
+          "txt-kvs",
+          "markdown-dataset",
+          "markdown-kvs",
+          "html-dataset",
+          "html-kvs",
+          "minified-html-dataset",
+          "minified-html-kvs",
+          "original-dataset",
+          "original-kvs"
+        ],
+        "enumTitles": [
+          "Plain text → Dataset",
+          "Plain text → Key-value store",
+          "Markdown → Dataset",
+          "Markdown → Key-value store",
+          "HTML → Dataset (large; OOM risk)",
+          "HTML → Key-value store",
+          "Minified HTML → Dataset (large; OOM risk)",
+          "Minified HTML → Key-value store",
+          "Original HTML → Dataset (large; OOM risk)",
+          "Original HTML → Key-value store"
+        ]
+      },
+      "minItems": 1
+    },
+    "datasetName": {
+      "title": "Dataset name",
+      "type": "string",
+      "description": "Name or ID of the dataset for storing results. Leave empty to use the default run dataset.",
+      "editor": "textfield"
+    },
+    "keyValueStoreName": {
+      "title": "Key-value store name",
+      "type": "string",
+      "description": "Name or ID of the key-value store for content files. Leave empty to use the default store.",
+      "editor": "textfield"
+    },
+    "requestQueueName": {
+      "title": "Request queue name",
+      "type": "string",
+      "description": "Name of the request queue for pending URLs. Leave empty to use the default queue.",
+      "editor": "textfield"
+    },
+    "storeSkippedUrls": {
+      "title": "Store skipped URLs",
+      "type": "boolean",
+      "description": "If enabled, pushes a dataset record for each URL skipped during crawling (excluded by globs, robots.txt, depth limit, or concurrency cap). Can produce high record volume — enable for auditing only.",
+      "editor": "checkbox",
+      "default": false
+    },
+    "proxyConfiguration": {
+      "sectionCaption": "Proxy",
+      "title": "Proxy configuration",
+      "type": "object",
+      "description": "Enables loading websites from IP addresses in specific geographies and to circumvent blocking.",
+      "editor": "proxy"
+    },
+    "proxyRotation": {
+      "title": "Proxy rotation",
+      "type": "string",
+      "description": "Proxy rotation strategy. recommended automatically picks the best proxies. per-request uses a new proxy for each request. until-failure uses one proxy until it fails.",
+      "editor": "select",
+      "default": "recommended",
+      "enum": ["recommended", "per-request", "until-failure"],
+      "enumTitles": ["Recommended", "Rotate per request", "Use until failure"]
+    },
+    "sessionPoolName": {
+      "title": "Session pool name",
+      "type": "string",
+      "description": "Name for a persistent, shared session pool. Sessions (IP + cookies) are saved under this key and reused across Actor runs. Useful when proxies are frequently blocked — previously working sessions are preferred over random ones.",
+      "editor": "textfield",
+      "minLength": 3,
+      "maxLength": 200,
+      "pattern": "^[0-9A-Za-z_-]+$"
+    },
+    "maxSessionRotations": {
+      "title": "Max session rotations",
+      "type": "integer",
+      "description": "Maximum number of session (IP + browser fingerprint) rotations per request on block detection. Independent of maxRequestRetries. Set to 0 to disable session rotation.",
+      "editor": "number",
+      "default": 10,
+      "minimum": 0,
+      "maximum": 20
+    },
+    "navigationTimeoutSecs": {
+      "sectionCaption": "Performance and limits",
+      "title": "Navigation timeout",
+      "type": "integer",
+      "description": "Maximum time to wait for page navigation in seconds",
+      "editor": "number",
+      "default": 60,
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "unit": "seconds"
+    },
+    "blockMedia": {
+      "title": "Block media",
+      "type": "boolean",
+      "description": "Block loading of images, stylesheets, fonts (.woff), PDFs, and ZIPs. On by default: it cuts browser memory and bandwidth substantially, which helps avoid out-of-memory on large pages. Disable it (set to false) if a page needs media to render its content (e.g. image- or CSS-driven lazy loading). Has no effect when using the raw HTTP crawler type or non-Chromium browsers (Chromium only).",
+      "editor": "checkbox",
+      "default": true
+    },
+    "waitForSelector": {
+      "title": "Wait for selector",
+      "type": "string",
+      "description": "Wait for this CSS selector to appear before extracting content. The request fails and is retried if the selector does not appear within the timeout. Leave empty to disable.",
+      "editor": "textfield",
+      "default": ""
+    },
+    "softWaitForSelector": {
+      "title": "Soft wait for selector",
+      "type": "string",
+      "description": "Wait for this CSS selector to appear before extracting content. Unlike waitForSelector, the request continues even if the selector does not appear within the timeout. Leave empty to disable.",
+      "editor": "textfield",
+      "default": ""
+    },
+    "waitForDynamicContentSecs": {
+      "title": "Wait for dynamic content",
+      "type": "integer",
+      "description": "Maximum seconds to wait for dynamic page content to load after navigation. The crawler continues when the network goes idle or this timeout elapses, whichever comes first. 0 disables this wait. Also used as the timeout for waitForSelector and softWaitForSelector.",
+      "editor": "number",
+      "default": 10,
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "unit": "seconds"
+    },
+    "waitUntil": {
+      "title": "Navigation wait until",
+      "type": "string",
+      "description": "When to consider navigation finished. networkidle waits for 500ms of network silence (best for JS-heavy SPAs, slower); load waits for the load event (default, good for most articles); domcontentloaded is fastest but may fire before client-side rendering completes; commit fires when network response is received and the document has started loading.",
+      "editor": "select",
+      "default": "load",
+      "enum": ["load", "domcontentloaded", "networkidle", "commit"],
+      "enumTitles": ["Load event", "DOM content loaded", "Network idle", "Commit"]
+    },
+    "headless": {
+      "title": "Headless mode",
+      "type": "boolean",
+      "description": "Run browser in headless mode",
+      "editor": "checkbox",
+      "default": true
+    },
+    "ignoreCorsAndCsp": {
+      "title": "Ignore CORS and CSP",
+      "type": "boolean",
+      "description": "Ignore Content Security Policy and Cross-Origin Resource Sharing restrictions. Enables free XHR/Fetch requests from pages.",
+      "editor": "checkbox",
+      "default": false
+    },
+    "closeCookieModals": {
+      "title": "Close cookie modals",
+      "type": "boolean",
+      "description": "Automatically handle cookie consent: Ghostery-based ad/tracker blocking, accepting consent walls that replace the page (e.g. consent-or-pay) via the site’s own consent manager and re-fetching the article, and removing residual consent/CMP containers before extraction.",
+      "editor": "checkbox",
+      "default": true
+    },
+    "maxScrollHeight": {
+      "title": "Max scroll height",
+      "type": "integer",
+      "description": "Maximum pixels (px) to scroll down the page until all content is loaded. Setting to 0 disables scrolling.",
+      "editor": "number",
+      "default": 5000,
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "userAgent": {
+      "title": "User-Agent",
+      "type": "string",
+      "description": "Custom User-Agent string for the browser. Leave empty to use the default browser User-Agent.",
+      "editor": "textfield",
+      "default": ""
+    },
+    "ignoreHttpsErrors": {
+      "title": "Ignore HTTPS errors",
+      "type": "boolean",
+      "description": "Ignore HTTPS certificate errors. Use at your own risk.",
+      "editor": "checkbox",
+      "default": false
+    }
+  },
+  "required": ["startUrls"]
+}

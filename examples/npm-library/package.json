@@ -1,0 +1,17 @@
+{
+  "name": "markdownee-npm-library-example",
+  "version": "0.4.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node --experimental-vm-modules dist/main.js",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "markdownee": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^26.5.1",
+    "typescript": "^7.0.2"
+  }
+}

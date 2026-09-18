@@ -1,0 +1,63 @@
+This file is the per-package legal notice for `@trafilaturacore/launder-replacement`.
+
+It covers only the code in THIS directory. It is NOT, and must never be read as,
+a notice for the `launder` package that this module is installed in place of.
+No published `launder` release ships a copyright-and-permission notice, and none
+may be manufactured on its behalf — that is precisely why this replacement exists.
+
+The directory contains two distinguishable parts, both permissively licensed:
+
+1. The dangerous-href algorithm, ported from `sanitize-html@2.17.3` (`index.js`
+   lines 728-768, `naughtyHref`), the last release that carried it inline before
+   it was extracted into `launder`. That tarball ships the MIT text reproduced
+   below under P'unk Avenue LLC's copyright, and `index.js` carries the same
+   notice inline with the exact tarball digest.
+
+2. The `(href, options)` adapter, its option defaults, and the module's own
+   arrangement, which are original to this repository.
+
+------------------------------------------------------------------------------
+MIT License — sanitize-html (verbatim, from the 2.17.3 tarball)
+
+Copyright (c) 2013, 2014, 2015 P'unk Avenue LLC
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+------------------------------------------------------------------------------
+MIT License — the original code in this directory
+
+Copyright (c) Trafilatura Core contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

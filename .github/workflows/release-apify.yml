@@ -1,0 +1,85 @@
+name: release-apify
+
+# Manual production build from a tagged commit on the mirror's main branch.
+# The owner provisions a GIT_REPO Actor version pointing at this tag and the
+# packages/apify-actor directory. No source upload or Console reconfiguration occurs here.
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag (vX.Y.Z). Dispatch with --ref the same tag."
+        required: true
+        type: string
+
+permissions: {}
+concurrency:
+  group: release-apify
+  cancel-in-progress: false
+env:
+  TAG: ${{ inputs.tag }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    environment: production
+    permissions:
+      contents: read
+    steps:
+      - name: Bind the definition to the requested tag
+        env:
+          WORKFLOW_REF: ${{ github.workflow_ref }}
+          REF: ${{ github.ref }}
+        run: |
+          set -euo pipefail
+          [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-(alpha|beta|rc)\.[0-9]+)?$ ]] || exit 1
+          [ "$GITHUB_REPOSITORY" = "markdownee/markdownee" ]
+          [ "$REF" = "refs/tags/$TAG" ]
+          [ "$WORKFLOW_REF" = "$GITHUB_REPOSITORY/.github/workflows/release-apify.yml@refs/tags/$TAG" ]
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify source and production configuration
+        run: |
+          set -euo pipefail
+          [ "$(git rev-parse "refs/tags/$TAG^{commit}")" = "$GITHUB_SHA" ]
+          git merge-base --is-ancestor "$GITHUB_SHA" origin/main
+          node - <<'JS'
+          const fs = require('node:fs');
+          const assert = require('node:assert/strict');
+          for (const pkg of ['schema', 'conversion', 'extraction', 'crawler', 'standalone', 'apify-actor']) {
+            const manifest = JSON.parse(fs.readFileSync(`packages/${pkg}/package.json`));
+            assert.equal(`v${manifest.version}`, process.env.TAG);
+          }
+          const actor = JSON.parse(fs.readFileSync('packages/apify-actor/.actor/actor.json'));
+          assert.equal(actor.name, 'crawler');
+          assert.equal(actor.dockerContextDir, '../../..');
+          for (const file of ['LICENSE', 'NOTICE', 'THIRD-PARTY-NOTICES.txt', '.npmrc', 'dependency-replacements/launder/LICENSE']) assert(fs.statSync(file).size > 0);
+          JS
+          ! git ls-files | grep -Eiq '\.(node|wasm|so|dylib|dll|exe|a|o|pyd|zip|whl|tgz)$'
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22.23.2"
+          package-manager-cache: false
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+      - name: Build the Actor source
+        run: |
+          pnpm install --no-frozen-lockfile
+          pnpm exec turbo run build --filter=@markdownee/apify
+      - name: Install the pinned platform CLI
+        run: npm install -g apify-cli@1.7.0
+      - name: Build the matching Git-connected production version
+        env:
+          APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+        run: |
+          set -euo pipefail
+          expected="https://github.com/markdownee/markdownee.git#$TAG:packages/apify-actor"
+          version="$(apify actors info markdownee/crawler --json | jq -er --arg url "$expected" \
+            '[.versions[] | select(.sourceType == "GIT_REPO" and .gitRepoUrl == $url)] | if length == 1 then .[0].versionNumber else error("Provision exactly one tagged GIT_REPO production version") end')"
+          apify builds create markdownee/crawler --version "$version" --tag latest --wait --json > "$RUNNER_TEMP/actor-build.json"
+          jq -e --arg url "$expected" '.status == "SUCCEEDED" and .actVersion.sourceType == "GIT_REPO" and .actVersion.gitRepoUrl == $url' "$RUNNER_TEMP/actor-build.json"
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: production-build-evidence
+          if-no-files-found: error
+          path: ${{ runner.temp }}/actor-build.json

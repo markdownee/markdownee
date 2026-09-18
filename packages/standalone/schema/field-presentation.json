@@ -1,0 +1,465 @@
+{
+  "title": "Markdownee field presentation",
+  "description": "Generated per-field presentation metadata (title, description, default, enum values + labels, CLI flags, Apify key, section) for the markdownee input surface. Derived from the Zod source of truth, apifyRegistry, and cli-surface; do not edit by hand.",
+  "fields": [
+    {
+      "field": "startUrls",
+      "title": "Start URLs",
+      "description": "URLs to extract content from",
+      "cliFlags": [],
+      "apifyKey": "startUrls"
+    },
+    {
+      "field": "crawlerType",
+      "title": "Crawler type",
+      "description": "Select how pages are fetched. playwright-adaptive uses browser rendering by default; a positive renderingTypeDetectionRatio enables detection for HTTP-only fetching. Choose an explicit Playwright browser or cheerio for HTTP requests without JavaScript execution.",
+      "default": "playwright-adaptive",
+      "enumValues": ["playwright-adaptive", "playwright-firefox", "playwright-chromium", "cheerio"],
+      "enumTitles": [
+        "Adaptive switching (Recommended)",
+        "Headless browser (Firefox+Playwright)",
+        "Headless browser (Chromium+Playwright)",
+        "Raw HTTP client (Cheerio)"
+      ],
+      "cliFlags": ["--crawler-type"],
+      "apifyKey": "crawlerType",
+      "section": "Crawler settings"
+    },
+    {
+      "field": "renderingTypeDetectionRatio",
+      "title": "Rendering type detection",
+      "description": "For the adaptive crawler, set the fraction of pages sampled to determine whether browser rendering is needed (0–1). The default 0 disables detection and uses the browser. With detection enabled, an HTTP fetch may miss content populated by JavaScript.",
+      "default": 0,
+      "cliFlags": ["--rendering-type-detection"],
+      "apifyKey": "renderingTypeDetectionRatio"
+    },
+    {
+      "field": "markdownDiscovery",
+      "title": "Markdown discovery",
+      "description": "Choose how to find a Markdown representation published by the origin. An accepted representation supplies content for all requested formats. off (default) leaves HTML fetching unchanged. alternate follows same-origin Markdown links advertised in a <link rel=\"alternate\" type=\"text/markdown\"> element or Link response header. negotiate also requests text/markdown through Accept, with a refetch when needed. probe additionally tries a .md sibling URL. Discovery can attempt three alternates, one negotiated refetch, and one sibling; robots.txt checks can add a request per origin. Per-origin budgets limit unsuccessful attempts. Available steps depend on the crawler path. Rejected or unavailable representations fall back to HTML extraction.",
+      "default": "off",
+      "enumValues": ["off", "alternate", "negotiate", "probe"],
+      "enumTitles": [
+        "Off — use HTML extraction",
+        "Follow advertised Markdown links",
+        "Also request Markdown with Accept",
+        "Also try a .md sibling"
+      ],
+      "cliFlags": ["--markdown-discovery"],
+      "apifyKey": "markdownDiscovery"
+    },
+    {
+      "field": "globs",
+      "title": "Include URLs (globs)",
+      "description": "Glob patterns matching URLs of pages that will be included in crawling. Setting this option allows you to customize the crawling scope. For example `https://{store,docs}.example.com/**` lets the crawler access all URLs starting with `https://store.example.com/` or `https://docs.example.com/`.",
+      "default": [],
+      "cliFlags": ["--globs"],
+      "apifyKey": "globs"
+    },
+    {
+      "field": "exclude",
+      "title": "Exclude URLs (globs)",
+      "description": "Glob patterns matching URLs of pages that will be excluded from crawling. Note that this affects only links found on pages, but not Start URLs, which are always crawled.",
+      "default": [],
+      "cliFlags": ["--exclude"],
+      "apifyKey": "exclude"
+    },
+    {
+      "field": "selector",
+      "title": "Link Selector",
+      "description": "CSS selector for links to enqueue. Leave empty to disable link enqueueing.",
+      "default": "",
+      "cliFlags": ["--selector"],
+      "apifyKey": "selector"
+    },
+    {
+      "field": "keepUrlFragment",
+      "title": "Keep URL fragment",
+      "description": "URL fragments (the parts of URL after a #) are not considered when the scraper determines whether a URL has already been visited. Turn this on to treat URLs with different fragments as different pages.",
+      "default": false,
+      "cliFlags": ["--keep-url-fragment"],
+      "apifyKey": "keepUrlFragment"
+    },
+    {
+      "field": "useSitemaps",
+      "title": "Use sitemaps",
+      "description": "If enabled, the crawler looks for sitemap.xml at the root of each start URL domain and enqueues matching URLs from it in addition to link-following.",
+      "default": false,
+      "cliFlags": ["--use-sitemaps"],
+      "apifyKey": "useSitemaps"
+    },
+    {
+      "field": "deduplication",
+      "title": "Deduplication",
+      "description": "Deduplication level applied on top of Crawlee's built-in URL deduplication. standard (default): skip pages whose <link rel=\"canonical\"> was already extracted, across all handler types. aggressive: also skip pages whose extracted text content matches a previously extracted page. minimal: disable additional deduplication — only Crawlee's built-in URL dedup remains active.",
+      "default": "standard",
+      "enumValues": ["minimal", "standard", "aggressive"],
+      "enumTitles": [
+        "Minimal — Crawlee URL dedup only",
+        "Standard — + canonical URL",
+        "Aggressive — + content hash"
+      ],
+      "cliFlags": ["--deduplication"],
+      "apifyKey": "deduplication"
+    },
+    {
+      "field": "respectRobotsTxtFile",
+      "title": "Respect robots.txt",
+      "description": "If enabled, the crawler will consult the robots.txt file for each domain before crawling pages.",
+      "default": false,
+      "cliFlags": ["--respect-robots-txt"],
+      "apifyKey": "respectRobotsTxtFile"
+    },
+    {
+      "field": "initialCookies",
+      "title": "Initial cookies",
+      "description": "Cookies that will be pre-set to all pages the scraper opens. This is useful for pages that require login. The value is expected to be a JSON array of objects with `name` and `value` properties. For example: \n\n```json\n[\n  {\n    \"name\": \"cookieName\",\n    \"value\": \"cookieValue\",\n    \"path\": \"/\",\n    \"domain\": \".example.com\"\n  }\n]\n```\n\nYou can use the [EditThisCookie](https://docs.apify.com/academy/tools/edit-this-cookie) browser extension to copy browser cookies in this format, and paste it here.\n\nNote that the value is secret and encrypted to protect your login cookies.",
+      "cliFlags": ["--cookies"],
+      "apifyKey": "initialCookies"
+    },
+    {
+      "field": "customHttpHeaders",
+      "title": "Custom HTTP headers",
+      "description": "HTTP headers that will be added to all requests made by the crawler. This is useful for setting custom authentication headers or other headers required by the target website. The value is expected to be a JSON object with header names as keys and header values as values. For example: `{ \"Authorization\": \"Bearer token123\", \"X-Custom-Header\": \"value\" }`.",
+      "cliFlags": ["--headers"],
+      "apifyKey": "customHttpHeaders"
+    },
+    {
+      "field": "maxRequestsPerCrawl",
+      "title": "Max requests per crawl",
+      "description": "Maximum number of requests the crawler will handle. Counts handled page outcomes (successes and final failures), including start URLs and pagination pages. The crawler automatically finishes after reaching this number. 0 means unlimited.",
+      "default": 0,
+      "cliFlags": ["--max-requests-per-crawl"],
+      "apifyKey": "maxRequestsPerCrawl"
+    },
+    {
+      "field": "maxResultsPerCrawl",
+      "title": "Max results",
+      "description": "Maximum number of results that will be saved to dataset. The scraper will terminate after reaching this number. 0 means unlimited.",
+      "default": 0,
+      "cliFlags": ["--max-results"],
+      "apifyKey": "maxResultsPerCrawl"
+    },
+    {
+      "field": "maxCrawlDepth",
+      "title": "Max crawling depth",
+      "description": "Maximum link depth from Start URLs. Pages discovered further from start URLs than this limit will not be crawled. 0 means unlimited.",
+      "default": 0,
+      "cliFlags": ["--max-crawl-depth"],
+      "apifyKey": "maxCrawlDepth"
+    },
+    {
+      "field": "initialConcurrency",
+      "title": "Initial concurrency",
+      "description": "Initial number of browser pages or HTTP clients running in parallel. Crawlee auto-scales up to maxConcurrency. 0 lets Crawlee pick the default.",
+      "default": 0,
+      "cliFlags": ["--initial-concurrency"],
+      "apifyKey": "initialConcurrency"
+    },
+    {
+      "field": "maxConcurrency",
+      "title": "Max concurrency",
+      "description": "Maximum number of browser pages running in parallel. Kept low by default because the browser crawler cannot abort in-flight pages, so concurrency is the only hard cap on peak memory — large pages can exhaust memory at higher values. Raise it for lightweight pages or the HTTP (cheerio) crawler. This setting also avoids overloading target websites and getting blocked.",
+      "default": 3,
+      "cliFlags": ["--max-concurrency"],
+      "apifyKey": "maxConcurrency"
+    },
+    {
+      "field": "maxRequestRetries",
+      "title": "Max request retries",
+      "description": "Maximum number of retries for failed requests on network, proxy, or server errors.",
+      "default": 3,
+      "cliFlags": ["--max-retries"],
+      "apifyKey": "maxRequestRetries"
+    },
+    {
+      "field": "mode",
+      "title": "Extraction mode",
+      "description": "Choose the content-selection policy. precision favors less boilerplate at the risk of omitted content; recall retains more content and may include clutter. balanced is the default. keep cleans the whole document without main-content selection.",
+      "default": "balanced",
+      "enumValues": ["precision", "balanced", "recall", "keep"],
+      "enumTitles": [
+        "Precision (less noise)",
+        "Balanced",
+        "Recall (more content)",
+        "Keep boilerplate (clean HTML only)"
+      ],
+      "cliFlags": ["--mode"],
+      "apifyKey": "mode",
+      "section": "Content extraction"
+    },
+    {
+      "field": "imageHandling",
+      "title": "Image handling",
+      "description": "What becomes of images in the extracted content. exclude (default) removes image structures entirely, including their captions. alt-text replaces each image with its textual stand-in (alt text, falling back to figcaption, aria-label, or title) — no URL, no bytes. resolved-url keeps each image as one clean tag whose src is the resolved absolute image URL (lazy-load and srcset variants collapsed); nothing is downloaded. The save MODE additionally downloads the image bytes, re-encodes them, and stores them in the key-value store, referencing them from the results — not to be confused with the save TOKENS option, which routes output formats to destinations.",
+      "default": "exclude",
+      "enumValues": ["exclude", "alt-text", "resolved-url", "save"],
+      "enumTitles": [
+        "Exclude images",
+        "Replace with alt text",
+        "Keep with resolved URLs",
+        "Save to key-value store"
+      ],
+      "cliFlags": ["--image-handling"],
+      "apifyKey": "imageHandling"
+    },
+    {
+      "field": "maxImageEdge",
+      "title": "Max image edge",
+      "description": "Long-edge pixel cap for images stored by the save image-handling mode: larger images are downscaled so their longer side is at most this many pixels (never upscaled). 0 disables the cap. Ignored unless imageHandling is save.",
+      "default": 1568,
+      "cliFlags": ["--max-image-edge"],
+      "apifyKey": "maxImageEdge"
+    },
+    {
+      "field": "rasterizeSvg",
+      "title": "Rasterize SVG",
+      "description": "For SVG images stored by the save image-handling mode: store a rasterized PNG instead of the sanitized SVG source (vision models accept no SVG). Disable to store the sanitized SVG source. Ignored unless imageHandling is save.",
+      "default": true,
+      "cliFlags": ["--rasterize-svg", "--no-rasterize-svg"],
+      "apifyKey": "rasterizeSvg"
+    },
+    {
+      "field": "linkHandling",
+      "title": "Link handling",
+      "description": "What becomes of hyperlinks in the extracted content. include (default) renders links inline. exclude unwraps each link — the anchor text survives, the URL is dropped.",
+      "default": "include",
+      "enumValues": ["include", "exclude"],
+      "enumTitles": ["Include hyperlinks", "Exclude links (keep anchor text)"],
+      "cliFlags": ["--link-handling"],
+      "apifyKey": "linkHandling"
+    },
+    {
+      "field": "tableHandling",
+      "title": "Table handling",
+      "description": "What becomes of tables in the extracted content. include (default) renders tables. exclude discards each table subtree entirely, including its cell text.",
+      "default": "include",
+      "enumValues": ["include", "exclude"],
+      "enumTitles": ["Include tables", "Exclude tables (drop subtree incl. text)"],
+      "cliFlags": ["--table-handling"],
+      "apifyKey": "tableHandling"
+    },
+    {
+      "field": "commentHandling",
+      "title": "Comment handling",
+      "description": "What becomes of user-comment sections (forum or blog comments — NOT <!-- --> HTML markup) in the extracted content. include keeps detected comment containers; exclude removes them before output serialization.",
+      "default": "include",
+      "enumValues": ["include", "exclude"],
+      "enumTitles": ["Include comment sections", "Exclude comment sections"],
+      "cliFlags": ["--comment-handling"],
+      "apifyKey": "commentHandling"
+    },
+    {
+      "field": "languageCode",
+      "title": "Language",
+      "description": "Filter extracted content by language code (e.g. \"en\"). Leave empty to accept any language.",
+      "default": "",
+      "cliFlags": ["--language"],
+      "apifyKey": "languageCode"
+    },
+    {
+      "field": "outputLayout",
+      "title": "Output layout",
+      "description": "Choose the structure surrounding generated content: minimal provides TXT/Markdown bodies and HTML fragments; standard adds ordinary metadata, front matter, and complete HTML documents; enhanced includes additional allowlisted metadata and crawl information. Readable HTML and Minified HTML use the same layout.",
+      "default": "minimal",
+      "enumValues": ["minimal", "standard", "enhanced"],
+      "enumTitles": ["Minimal", "Standard", "Enhanced"],
+      "cliFlags": ["--output-layout"],
+      "apifyKey": "outputLayout"
+    },
+    {
+      "field": "save",
+      "title": "Save",
+      "description": "What to save and where, as `format-destination` tokens. Format is one of `txt`, `markdown`, `html`, `minified-html`, `original` (raw page HTML before extraction); destination is `dataset` (inline in the dataset record) or `kvs` (a blob in the key-value store). List a format twice to save it to both, e.g. `markdown-dataset markdown-kvs`. Saving generated or original HTML (large content) to the dataset is not recommended — it risks out-of-memory on large pages; prefer `kvs`.",
+      "default": ["markdown-kvs"],
+      "enumValues": [
+        "txt-dataset",
+        "txt-kvs",
+        "markdown-dataset",
+        "markdown-kvs",
+        "html-dataset",
+        "html-kvs",
+        "minified-html-dataset",
+        "minified-html-kvs",
+        "original-dataset",
+        "original-kvs"
+      ],
+      "enumTitles": [
+        "Plain text → Dataset",
+        "Plain text → Key-value store",
+        "Markdown → Dataset",
+        "Markdown → Key-value store",
+        "HTML → Dataset (large; OOM risk)",
+        "HTML → Key-value store",
+        "Minified HTML → Dataset (large; OOM risk)",
+        "Minified HTML → Key-value store",
+        "Original HTML → Dataset (large; OOM risk)",
+        "Original HTML → Key-value store"
+      ],
+      "cliFlags": ["--save"],
+      "apifyKey": "save",
+      "section": "Output settings"
+    },
+    {
+      "field": "datasetName",
+      "title": "Dataset name",
+      "description": "Name or ID of the dataset for storing results. Leave empty to use the default run dataset.",
+      "cliFlags": [],
+      "apifyKey": "datasetName"
+    },
+    {
+      "field": "keyValueStoreName",
+      "title": "Key-value store name",
+      "description": "Name or ID of the key-value store for content files. Leave empty to use the default store.",
+      "cliFlags": [],
+      "apifyKey": "keyValueStoreName"
+    },
+    {
+      "field": "requestQueueName",
+      "title": "Request queue name",
+      "description": "Name of the request queue for pending URLs. Leave empty to use the default queue.",
+      "cliFlags": [],
+      "apifyKey": "requestQueueName"
+    },
+    {
+      "field": "storeSkippedUrls",
+      "title": "Store skipped URLs",
+      "description": "If enabled, pushes a dataset record for each URL skipped during crawling (excluded by globs, robots.txt, depth limit, or concurrency cap). Can produce high record volume — enable for auditing only.",
+      "default": false,
+      "cliFlags": ["--store-skipped-urls"],
+      "apifyKey": "storeSkippedUrls"
+    },
+    {
+      "field": "proxyConfiguration",
+      "title": "Proxy configuration",
+      "description": "Enables loading websites from IP addresses in specific geographies and to circumvent blocking.",
+      "cliFlags": [],
+      "apifyKey": "proxyConfiguration",
+      "section": "Proxy"
+    },
+    {
+      "field": "proxyRotation",
+      "title": "Proxy rotation",
+      "description": "Proxy rotation strategy. recommended automatically picks the best proxies. per-request uses a new proxy for each request. until-failure uses one proxy until it fails.",
+      "default": "recommended",
+      "enumValues": ["recommended", "per-request", "until-failure"],
+      "enumTitles": ["Recommended", "Rotate per request", "Use until failure"],
+      "cliFlags": ["--proxy-rotation"],
+      "apifyKey": "proxyRotation"
+    },
+    {
+      "field": "sessionPoolName",
+      "title": "Session pool name",
+      "description": "Name for a persistent, shared session pool. Sessions (IP + cookies) are saved under this key and reused across Actor runs. Useful when proxies are frequently blocked — previously working sessions are preferred over random ones.",
+      "cliFlags": ["--session-pool-name"],
+      "apifyKey": "sessionPoolName"
+    },
+    {
+      "field": "maxSessionRotations",
+      "title": "Max session rotations",
+      "description": "Maximum number of session (IP + browser fingerprint) rotations per request on block detection. Independent of maxRequestRetries. Set to 0 to disable session rotation.",
+      "default": 10,
+      "cliFlags": ["--max-session-rotations"],
+      "apifyKey": "maxSessionRotations"
+    },
+    {
+      "field": "navigationTimeoutSecs",
+      "title": "Navigation timeout",
+      "description": "Maximum time to wait for page navigation in seconds",
+      "default": 60,
+      "cliFlags": ["--navigation-timeout"],
+      "apifyKey": "navigationTimeoutSecs",
+      "section": "Performance and limits"
+    },
+    {
+      "field": "blockMedia",
+      "title": "Block media",
+      "description": "Block loading of images, stylesheets, fonts (.woff), PDFs, and ZIPs. On by default: it cuts browser memory and bandwidth substantially, which helps avoid out-of-memory on large pages. Disable it (set to false) if a page needs media to render its content (e.g. image- or CSS-driven lazy loading). Has no effect when using the raw HTTP crawler type or non-Chromium browsers (Chromium only).",
+      "default": true,
+      "cliFlags": ["--block-media", "--no-block-media"],
+      "apifyKey": "blockMedia"
+    },
+    {
+      "field": "waitForSelector",
+      "title": "Wait for selector",
+      "description": "Wait for this CSS selector to appear before extracting content. The request fails and is retried if the selector does not appear within the timeout. Leave empty to disable.",
+      "default": "",
+      "cliFlags": ["--wait-for-selector"],
+      "apifyKey": "waitForSelector"
+    },
+    {
+      "field": "softWaitForSelector",
+      "title": "Soft wait for selector",
+      "description": "Wait for this CSS selector to appear before extracting content. Unlike waitForSelector, the request continues even if the selector does not appear within the timeout. Leave empty to disable.",
+      "default": "",
+      "cliFlags": ["--soft-wait-for-selector"],
+      "apifyKey": "softWaitForSelector"
+    },
+    {
+      "field": "waitForDynamicContentSecs",
+      "title": "Wait for dynamic content",
+      "description": "Maximum seconds to wait for dynamic page content to load after navigation. The crawler continues when the network goes idle or this timeout elapses, whichever comes first. 0 disables this wait. Also used as the timeout for waitForSelector and softWaitForSelector.",
+      "default": 10,
+      "cliFlags": ["--wait-for-dynamic-content"],
+      "apifyKey": "waitForDynamicContentSecs"
+    },
+    {
+      "field": "waitUntil",
+      "title": "Navigation wait until",
+      "description": "When to consider navigation finished. networkidle waits for 500ms of network silence (best for JS-heavy SPAs, slower); load waits for the load event (default, good for most articles); domcontentloaded is fastest but may fire before client-side rendering completes; commit fires when network response is received and the document has started loading.",
+      "default": "load",
+      "enumValues": ["load", "domcontentloaded", "networkidle", "commit"],
+      "enumTitles": ["Load event", "DOM content loaded", "Network idle", "Commit"],
+      "cliFlags": ["--wait-until"],
+      "apifyKey": "waitUntil"
+    },
+    {
+      "field": "headless",
+      "title": "Headless mode",
+      "description": "Run browser in headless mode",
+      "default": true,
+      "cliFlags": ["--headless", "--no-headless"],
+      "apifyKey": "headless"
+    },
+    {
+      "field": "ignoreCorsAndCsp",
+      "title": "Ignore CORS and CSP",
+      "description": "Ignore Content Security Policy and Cross-Origin Resource Sharing restrictions. Enables free XHR/Fetch requests from pages.",
+      "default": false,
+      "cliFlags": ["--ignore-cors-and-csp"],
+      "apifyKey": "ignoreCorsAndCsp"
+    },
+    {
+      "field": "closeCookieModals",
+      "title": "Close cookie modals",
+      "description": "Automatically handle cookie consent: Ghostery-based ad/tracker blocking, accepting consent walls that replace the page (e.g. consent-or-pay) via the site’s own consent manager and re-fetching the article, and removing residual consent/CMP containers before extraction.",
+      "default": true,
+      "cliFlags": ["--close-cookie-modals", "--no-close-cookie-modals"],
+      "apifyKey": "closeCookieModals"
+    },
+    {
+      "field": "maxScrollHeight",
+      "title": "Max scroll height",
+      "description": "Maximum pixels (px) to scroll down the page until all content is loaded. Setting to 0 disables scrolling.",
+      "default": 5000,
+      "cliFlags": ["--max-scroll-height"],
+      "apifyKey": "maxScrollHeight"
+    },
+    {
+      "field": "userAgent",
+      "title": "User-Agent",
+      "description": "Custom User-Agent string for the browser. Leave empty to use the default browser User-Agent.",
+      "default": "",
+      "cliFlags": ["--user-agent"],
+      "apifyKey": "userAgent"
+    },
+    {
+      "field": "ignoreHttpsErrors",
+      "title": "Ignore HTTPS errors",
+      "description": "Ignore HTTPS certificate errors. Use at your own risk.",
+      "default": false,
+      "cliFlags": ["--ignore-https-errors"],
+      "apifyKey": "ignoreHttpsErrors"
+    }
+  ]
+}

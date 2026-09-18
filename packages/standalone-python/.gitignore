@@ -1,0 +1,18 @@
+# Residual build artifacts from older wrappers are never authored or distributed.
+/src/markdownee/_vendor/
+/THIRD-PARTY-NOTICES.txt
+
+# Python build/test artifacts
+/dist/
+/build/
+*.egg-info/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Local virtualenvs + uv lockfile (this is a published library; the lock is a
+# dev-only convenience, kept out of the tree per the repo's lockfiles-gitignored policy)
+/.venv/
+/venv/
+uv.lock

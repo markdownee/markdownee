@@ -1,0 +1,30 @@
+{
+  "actorKeyValueStoreSchemaVersion": 1,
+  "title": "Stored content",
+  "collections": {
+    "txt": {
+      "title": "Plain text",
+      "keyPrefix": "txt-"
+    },
+    "markdown": {
+      "title": "Markdown",
+      "keyPrefix": "markdown-"
+    },
+    "html": {
+      "title": "Extracted HTML",
+      "keyPrefix": "html-"
+    },
+    "minifiedHtml": {
+      "title": "Minified HTML",
+      "keyPrefix": "minified-html-"
+    },
+    "original": {
+      "title": "Original HTML",
+      "keyPrefix": "original-"
+    },
+    "images": {
+      "title": "Images (save image-handling mode)",
+      "keyPrefix": "images-"
+    }
+  }
+}

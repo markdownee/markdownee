@@ -1,0 +1,39 @@
+Markdownee
+Copyright (c) glueo
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+This product bundles and/or uses the following third-party components. Their
+licenses and required attributions are reproduced below.
+
+================================================================================
+Bundled code
+================================================================================
+
+This section lists only the components that need an explicit call-out here. The
+accompanying THIRD-PARTY-NOTICES.txt covers the redistributed production closure.
+
+@ghostery/adblocker-playwright
+  License: Mozilla Public License 2.0 (MPL-2.0)
+  Source:  https://github.com/ghostery/adblocker
+  Used for cookie-consent / annoyance blocking in the browser crawler. MPL-2.0
+  is file-level copyleft: the unmodified Ghostery source files retain their
+  MPL-2.0 license; this product's own code remains under Apache-2.0.
+
+================================================================================
+Filter-list data loaded at runtime (NOT bundled in this distribution)
+================================================================================
+
+The Ghostery adblocker engine is built at runtime from the following filter
+lists, which are fetched over the network on first use and cached to a temporary
+file. They are NOT vendored into this distribution's artifacts.
+
+  EasyList, EasyPrivacy
+  Fanboy's Annoyance list, Fanboy's Cookiemonster list
+    License:     dual GPL-3.0-or-later AND CC-BY-SA-3.0
+    Used branch: CC-BY-SA-3.0
+    Attribution: The EasyList authors (https://easylist.to/)
+
+Because these lists are retrieved at runtime rather than redistributed here, no
+GPL-3.0 / CC-BY-SA-3.0 filter-list data is vendored into this distribution's
+artifacts.

@@ -1,0 +1,254 @@
+name: release-pypi
+
+# Publish the native Python wheel from one authenticated run.
+#
+# Dispatch MUST bind the workflow DEFINITION to the tag:
+#   gh -R markdownee/markdownee workflow run release-pypi.yml --ref vX.Y.Z -f tag=vX.Y.Z
+#
+# The product contains Python source and no product CLI or bundled JavaScript engine.
+# Build, inspect, and install both the `py3-none-any` wheel and source archive.
+# Runtime dependencies install separately and may provide their own native wheels.
+# The source archive remains a verification artifact; PyPI publication is wheel-only.
+#
+# Authored in tools; see @/directives/dev/native-artifact-provenance.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag (vX.Y.Z). Dispatch with --ref <the same tag>."
+        required: true
+        type: string
+
+permissions: {}
+
+concurrency:
+  group: release-pypi-${{ inputs.tag }}
+  cancel-in-progress: false
+
+env:
+  TAG: ${{ inputs.tag }}
+  PYTHON_VERSION: "3.12"
+
+jobs:
+  guard:
+    name: bind the run to an immutable definition
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - name: Require workflow-ref / requested-input equality
+        shell: bash
+        env:
+          TAG: ${{ inputs.tag }}
+          WORKFLOW_REF: ${{ github.workflow_ref }}
+          REF: ${{ github.ref }}
+        run: |
+          set -euo pipefail
+          [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-(alpha|beta|rc)\.[0-9]+)?$ ]] || exit 1
+          expected="${GITHUB_REPOSITORY}/.github/workflows/release-pypi.yml@refs/tags/${TAG}"
+          if [ "$WORKFLOW_REF" != "$expected" ] || [ "$REF" != "refs/tags/${TAG}" ]; then
+            echo "workflow_ref=${WORKFLOW_REF}" >&2
+            echo "expected    =${expected}" >&2
+            echo "Dispatch with: gh -R ${GITHUB_REPOSITORY} workflow run release-pypi.yml --ref ${TAG} -f tag=${TAG}" >&2
+            exit 1
+          fi
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Require the tag, the tree and both manifests to agree
+        shell: bash
+        run: |
+          set -euo pipefail
+          [ "$(git rev-parse "refs/tags/${TAG}^{commit}")" = "$GITHUB_SHA" ]
+          ! git ls-files | grep -Eiq '\.(node|wasm|so|dylib|dll|exe|a|o|pyd|zip|jar|whl|tgz|tar|tar\.gz|crate)$'
+          npm_version="$(node -p "require('./packages/standalone/package.json').version")"
+          [ "v${npm_version}" = "${TAG}" ] \
+            || { echo "npm manifest ${npm_version} != tag ${TAG}" >&2; exit 1; }
+          py_version="$(sed -n 's/^version[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' \
+            packages/standalone-python/pyproject.toml | head -1)"
+          # The project's npm-to-PEP-440 convention, applied without a build dependency:
+          # 0.1.0-alpha.2 -> 0.1.0a2, 0.1.0-beta.1 -> 0.1.0b1, 0.1.0-rc.1 -> 0.1.0rc1, 1.2.3 -> 1.2.3.
+          normalised="$(printf '%s' "$npm_version" \
+            | sed -e 's/-alpha\./a/' -e 's/-beta\./b/' -e 's/-rc\./rc/')"
+          [ "$py_version" = "$normalised" ] \
+            || { echo "pyproject ${py_version} != normalised npm ${normalised}" >&2; exit 1; }
+
+  wheel:
+    name: build and verify native Python distributions
+    needs: guard
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Require the tag binding and a native-artifact-free tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          [ "$(git rev-parse "refs/tags/${TAG}^{commit}")" = "$GITHUB_SHA" ]
+          ! git ls-files | grep -Eiq '\.(node|wasm|so|dylib|dll|exe|a|o|pyd)$'
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Assemble the disposable Python candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Build outside the checkout; package-local LICENSE and NOTICE travel with the source.
+          rm -rf "$RUNNER_TEMP/candidate"
+          cp -R packages/standalone-python "$RUNNER_TEMP/candidate"
+          rm -rf "$RUNNER_TEMP/candidate/dist" "$RUNNER_TEMP/candidate/temp" \
+                 "$RUNNER_TEMP/candidate/__pycache__" "$RUNNER_TEMP/candidate/scripts/__pycache__"
+          python -m pip install --upgrade pip
+          python -m pip install build hatchling
+      - name: Build the wheel and source archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m build \
+            --outdir "$GITHUB_WORKSPACE/wheelhouse" "$RUNNER_TEMP/candidate"
+
+      - name: Inspect and hash both final distributions
+        shell: bash
+        run: |
+          set -euo pipefail
+          [ "$(ls -1 wheelhouse/*.whl | wc -l | tr -d ' ')" -eq 1 ]
+          [ "$(ls -1 wheelhouse/*.tar.gz | wc -l | tr -d ' ')" -eq 1 ]
+          wheel="$(ls -1 wheelhouse/*.whl)"
+          sdist="$(ls -1 wheelhouse/*.tar.gz)"
+          python - "$wheel" "$sdist" <<'PY'
+          import configparser
+          import re
+          import sys
+          import tarfile
+          import zipfile
+          from email.parser import BytesParser
+          from pathlib import PurePosixPath
+
+          wheel, sdist = sys.argv[1:]
+          forbidden = re.compile(
+              r"\.(?:node|wasm|exe|pyd|dll|so(?:\.\d+)*|(?:\d+\.)*dylib|a|o|js|mjs|cjs)$"
+          )
+
+          def inspect_names(names):
+              assert not [name for name in names if forbidden.search(name)], "non-Python payload"
+              assert not [
+                  name for name in names
+                  if "_vendor" in PurePosixPath(name).parts
+                  or "node_modules" in PurePosixPath(name).parts
+                  or name.endswith("markdownee/__main__.py")
+              ], "unexpected bundled engine or product CLI"
+
+          with zipfile.ZipFile(wheel) as archive:
+              names = archive.namelist()
+              inspect_names(names)
+              assert wheel.endswith("-py3-none-any.whl"), "wheel is not platform-independent"
+              assert "markdownee/_run.py" in names, "missing native Python implementation"
+              metadata_name = next(name for name in names if name.endswith(".dist-info/METADATA"))
+              metadata = BytesParser().parsebytes(archive.read(metadata_name))
+              assert metadata["License-Expression"] == "Apache-2.0"
+              assert not any(
+                  "nodejs" in dependency.lower()
+                  for dependency in metadata.get_all("Requires-Dist", [])
+              ), "unexpected Node runtime dependency"
+              for name in names:
+                  if name.endswith(".dist-info/entry_points.txt"):
+                      entries = configparser.ConfigParser()
+                      entries.read_string(archive.read(name).decode())
+                      assert not entries.has_section("console_scripts"), "product CLI entry point"
+              for legal in ("LICENSE", "NOTICE"):
+                  assert any(name.endswith(f"licenses/{legal}") for name in names), legal
+              for legal in metadata.get_all("License-File", []):
+                  prefix = metadata_name.removesuffix("METADATA")
+                  assert f"{prefix}licenses/{legal}" in names, f"missing declared legal file: {legal}"
+          with tarfile.open(sdist, "r:gz") as archive:
+              names = archive.getnames()
+              inspect_names(names)
+              assert any(name.endswith("/src/markdownee/_run.py") for name in names)
+              for legal in ("LICENSE", "NOTICE"):
+                  assert any(name.count("/") == 1 and name.endswith(f"/{legal}") for name in names)
+          print("distributions OK:", wheel, sdist)
+          PY
+          shasum -a 256 "$wheel" | tee "wheelhouse/$(basename "$wheel").sha256"
+          shasum -a 256 "$sdist" | tee "wheelhouse/$(basename "$sdist").sha256"
+
+      - name: Install and exercise each distribution in a clean environment
+        shell: bash
+        run: |
+          set -euo pipefail
+          for artifact in wheelhouse/*.whl wheelhouse/*.tar.gz; do
+            environment="$RUNNER_TEMP/verify-$(basename "$artifact")"
+            python -m venv "$environment"
+            py="$environment/bin/python"
+            "$py" -m pip install --no-cache-dir "$artifact"
+            "$py" - <<'PY'
+          from importlib.metadata import distribution
+          from markdownee import CrawlOptions, FetchOptions, acrawl, afetch, crawl, fetch
+
+          assert all(callable(fn) for fn in (crawl, fetch, acrawl, afetch))
+          assert FetchOptions and CrawlOptions
+          assert not any(
+              entry.group == "console_scripts"
+              for entry in distribution("markdownee").entry_points
+          )
+          PY
+          done
+
+      - uses: actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373 # v4.1.1
+        with:
+          subject-path: |
+            wheelhouse/*.whl
+            wheelhouse/*.tar.gz
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: python-distributions
+          if-no-files-found: error
+          retention-days: 90
+          path: |
+            wheelhouse/*.whl
+            wheelhouse/*.tar.gz
+            wheelhouse/*.sha256
+
+  publish:
+    name: publish to PyPI
+    needs: [guard, wheel]
+    runs-on: ubuntu-24.04
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          path: dist
+          pattern: python-distributions
+          merge-multiple: true
+
+      - name: Select exactly one platform-independent wheel for publication
+        shell: bash
+        run: |
+          set -euo pipefail
+          find dist -name '*.sha256' -delete
+          find dist -name '*.json' -delete
+          [ "$(ls -1 dist/*.whl | wc -l | tr -d ' ')" -eq 1 ]
+          [ "$(ls -1 dist/*-py3-none-any.whl | wc -l | tr -d ' ')" -eq 1 ]
+          [ "$(ls -1 dist/*.tar.gz | wc -l | tr -d ' ')" -eq 1 ]
+          rm dist/*.tar.gz
+          ls -1 dist
+
+      - uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2
+        with:
+          # PEP 740 digital attestations. Pinned so a default change cannot silently drop them.
+          attestations: true

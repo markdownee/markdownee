@@ -1,0 +1,15 @@
+node_modules/
+dist/
+dist-types/
+.turbo/
+.tsup/
+.venv/
+__pycache__/
+*.pyc
+*.tsbuildinfo
+pnpm-lock.yaml
+.env
+.env.*
+/storage/
+/packages/*/storage/
+/examples/*/storage/

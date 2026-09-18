@@ -1,0 +1,23 @@
+{
+  "name": "@markdownee/apify",
+  "version": "0.5.0-alpha.2",
+  "private": true,
+  "description": "Apify Actor that crawls websites and extracts main-content text. Built on Trafilatura Core and Crawlee.",
+  "type": "module",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "deploy": "node scripts/deploy.mjs",
+    "start": "node dist/main.js",
+    "start:prod": "node dist/main.js"
+  },
+  "dependencies": {
+    "@markdownee/crawler": "workspace:*",
+    "@markdownee/schema": "workspace:*",
+    "apify": "^3.7.2"
+  },
+  "devDependencies": {
+    "@types/node": "^26.5.1",
+    "typescript": "^7.0.2"
+  }
+}

@@ -1,0 +1,9 @@
+Markdownee native Python library
+Copyright 2026 glueo
+
+Licensed under the Apache License, Version 2.0. See LICENSE.
+
+This Python distribution contains Markdownee's Python sources. Crawlee,
+Trafilatura Core, markdownify, pyvips, libvips, Playwright, Pydantic, and lxml
+are separately installed dependencies with their own licenses and notices.
+It does not vendor the TypeScript product or its dependency tree.

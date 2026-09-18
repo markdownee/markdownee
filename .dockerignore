@@ -1,0 +1,8 @@
+.git
+**/node_modules
+**/dist
+**/dist-types
+**/.turbo
+**/.venv
+**/__pycache__
+**/.env*

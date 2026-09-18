@@ -1,0 +1,33 @@
+{
+  "name": "@markdownee/crawler",
+  "version": "0.5.0-alpha.2",
+  "private": true,
+  "description": "Shared Crawlee + Playwright crawler package for Markdownee.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": ["dist", "src"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@ghostery/adblocker-playwright": "^2.18.2",
+    "@markdownee/extraction": "workspace:*",
+    "@markdownee/schema": "workspace:*",
+    "crawlee": "^3.18.1",
+    "isomorphic-dompurify": "^4.2.0",
+    "playwright": "^1.63.0",
+    "sharp": "^0.35.4",
+    "svgo": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.5.1",
+    "typescript": "^7.0.2"
+  }
+}

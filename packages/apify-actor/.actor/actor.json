@@ -1,0 +1,23 @@
+{
+  "actorSpecification": 1,
+  "name": "crawler",
+  "title": "Markdownee",
+  "description": "Crawl any website and extract clean main content as Markdown, plain text, readable HTML, minified HTML, or raw original HTML — ready for LLMs, RAG pipelines, and vector databases. Built on the Trafilatura Core engine and an adaptive Crawlee + Playwright crawler.",
+  "version": "0.4",
+  "buildTag": "latest",
+  "minMemoryMbytes": 2048,
+  "defaultMemoryMbytes": 4096,
+  "maxMemoryMbytes": 8192,
+  "meta": {
+    "templateId": "node-playwright",
+    "generatedBy": "claude-code"
+  },
+  "dockerfile": "./Dockerfile",
+  "dockerContextDir": "../../..",
+  "input": "./input_schema.json",
+  "output": "./output_schema.json",
+  "storages": {
+    "dataset": "./dataset_schema.json",
+    "keyValueStore": "./key_value_store_schema.json"
+  }
+}

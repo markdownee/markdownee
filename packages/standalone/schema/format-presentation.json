@@ -1,0 +1,31 @@
+{
+  "title": "Markdownee format presentation",
+  "description": "Generated per-output-format presentation metadata (label + description) for the markdownee extraction formats. Derived from the Zod source of truth — the save-route enumTitles and the output record descriptions; do not edit by hand.",
+  "formats": [
+    {
+      "format": "txt",
+      "label": "Plain text",
+      "description": "Extracted plain text. Present when a \"txt-*\" token is in save."
+    },
+    {
+      "format": "markdown",
+      "label": "Markdown",
+      "description": "Extracted Markdown. Present when a \"markdown-*\" token is in save."
+    },
+    {
+      "format": "html",
+      "label": "HTML",
+      "description": "Readable cleaned HTML. Present when an \"html-*\" token is in save."
+    },
+    {
+      "format": "minified-html",
+      "label": "Minified HTML",
+      "description": "Compact cleaned HTML. Present when a \"minified-html-*\" token is in save."
+    },
+    {
+      "format": "original",
+      "label": "Original HTML",
+      "description": "The raw page HTML. \"hash\" and \"bytes\" are always present. When an \"original-*\" token is in save, the raw HTML is included as \"content\" (an \"original-dataset\" token) and/or referenced by \"key\"/\"url\" (an \"original-kvs\" token)."
+    }
+  ]
+}

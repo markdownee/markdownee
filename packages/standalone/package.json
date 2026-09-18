@@ -1,0 +1,101 @@
+{
+  "name": "markdownee",
+  "version": "0.5.0-alpha.2",
+  "description": "Standalone CLI and npm library for Markdownee. Built on Trafilatura Core and Crawlee.",
+  "keywords": [
+    "web-scraping",
+    "web-crawler",
+    "crawler",
+    "content-extraction",
+    "main-content",
+    "boilerplate-removal",
+    "readability",
+    "trafilatura",
+    "crawlee",
+    "playwright",
+    "cheerio",
+    "html-to-markdown",
+    "markdown",
+    "scraper",
+    "llm",
+    "rag"
+  ],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/markdownee/markdownee.git",
+    "directory": "packages/standalone"
+  },
+  "homepage": "https://www.markdownee.com",
+  "funding": "https://www.markdownee.com",
+  "bugs": {
+    "url": "https://github.com/markdownee/markdownee/issues"
+  },
+  "type": "module",
+  "bin": {
+    "markdownee": "dist/cli.js"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./cli": {
+      "types": "./dist/cli-api.d.ts",
+      "default": "./dist/cli-api.js"
+    },
+    "./storage": {
+      "types": "./dist/storage.d.ts",
+      "default": "./dist/storage.js"
+    },
+    "./schema": {
+      "types": "./dist/schema.d.ts",
+      "default": "./dist/schema.js"
+    },
+    "./schema/library-input.json": "./schema/library-input.schema.json",
+    "./schema/output.json": "./schema/output.schema.json",
+    "./schema/cli-input.json": "./schema/cli-input.schema.json",
+    "./schema/cli-surface.json": "./schema/cli-surface.json",
+    "./schema/field-presentation.json": "./schema/field-presentation.json",
+    "./schema/format-presentation.json": "./schema/format-presentation.json"
+  },
+  "files": ["dist", "schema", "README.md"],
+  "engines": {
+    "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+  },
+  "scripts": {
+    "build": "tsup && pnpm run build:types",
+    "start": "node dist/cli.js",
+    "build:types": "tsc -p tsconfig.dts.json && node scripts/build-types.mjs",
+    "prepublishOnly": "node scripts/verify-package.mjs"
+  },
+  "dependencies": {
+    "@ghostery/adblocker-playwright": "^2.18.2",
+    "@joplin/turndown-plugin-gfm": "^1.0.68",
+    "@mixmark-io/domino": "^2.2.0",
+    "commander": "^15.0.0",
+    "crawlee": "^3.18.1",
+    "isomorphic-dompurify": "^4.2.0",
+    "marked": "^18.0.12",
+    "playwright": "^1.63.0",
+    "prettier": "^3.9.6",
+    "sharp": "^0.35.4",
+    "svgo": "^4.1.0",
+    "trafilaturacore": "0.1.0-alpha.3",
+    "turndown": "^7.2.4",
+    "yaml": "^2.9.0",
+    "zod": "^4.6.1"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
+    "@markdownee/crawler": "workspace:*",
+    "@markdownee/schema": "workspace:*",
+    "@microsoft/api-extractor": "^7.59.1",
+    "@types/node": "^26.5.1",
+    "publint": "^0.3.24",
+    "tsup": "^8.5.1",
+    "typescript": "^7.0.2"
+  }
+}

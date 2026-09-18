@@ -1,0 +1,298 @@
+{
+  "actorSpecification": 1,
+  "fields": {
+    "url": {
+      "type": "string",
+      "description": "The original request URL"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["success", "failed", "skipped"],
+      "description": "Record outcome discriminator"
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Page title"
+        },
+        "author": {
+          "type": "string",
+          "description": "Content author"
+        },
+        "date": {
+          "type": "string",
+          "description": "Publication date"
+        },
+        "description": {
+          "type": "string",
+          "description": "Page description or summary"
+        },
+        "siteName": {
+          "type": "string",
+          "description": "Site name"
+        },
+        "languageCode": {
+          "type": "string",
+          "description": "Detected content language code (ISO 639)"
+        },
+        "pageUrl": {
+          "type": "string",
+          "description": "Canonical page URL from page metadata"
+        },
+        "imageUrl": {
+          "type": "string",
+          "description": "Representative image URL"
+        },
+        "hostname": {
+          "type": "string",
+          "description": "Page hostname"
+        },
+        "categories": {
+          "type": "array",
+          "description": "Extracted categories"
+        },
+        "tags": {
+          "type": "array",
+          "description": "Extracted tags"
+        },
+        "license": {
+          "type": "string",
+          "description": "Content license"
+        },
+        "declaredPageType": {
+          "type": "string",
+          "description": "Page-declared type from OpenGraph og:type or a recognized JSON-LD @type, lowercased for JSON-LD"
+        }
+      },
+      "description": "Extracted page metadata"
+    },
+    "crawl": {
+      "type": "object",
+      "properties": {
+        "loadedUrl": {
+          "type": "string",
+          "description": "The URL that was loaded (post-redirect)"
+        },
+        "scrapedAt": {
+          "type": "string",
+          "description": "ISO 8601 timestamp when extraction ran"
+        },
+        "httpStatusCode": {
+          "type": "integer",
+          "description": "Observed HTTP response status code, when available"
+        },
+        "depth": {
+          "type": "integer",
+          "description": "Link distance from a start URL"
+        },
+        "referrerUrl": {
+          "type": "string",
+          "description": "The linking page URL"
+        }
+      },
+      "description": "Crawl provenance for this page"
+    },
+    "original": {
+      "type": "object",
+      "properties": {
+        "hash": {
+          "type": "string",
+          "description": "MD5 hex digest of the content"
+        },
+        "bytes": {
+          "type": "integer",
+          "description": "UTF-8 byte length of the content"
+        },
+        "content": {
+          "type": "string",
+          "description": "Inline content string. Present when this format targets the dataset (a \"*-dataset\" token). May co-exist with \"key\"/\"url\" when the format also targets the key-value store."
+        },
+        "key": {
+          "type": "string",
+          "description": "Key-value store key. Present when this format targets the key-value store (a \"*-kvs\" token). May co-exist with inline \"content\" when the format also targets the dataset."
+        },
+        "url": {
+          "type": "string",
+          "description": "Public URL to the key-value store item. Present when stored to a public store."
+        }
+      },
+      "description": "The raw page HTML. \"hash\" and \"bytes\" are always present. When an \"original-*\" token is in save, the raw HTML is included as \"content\" (an \"original-dataset\" token) and/or referenced by \"key\"/\"url\" (an \"original-kvs\" token)."
+    },
+    "txt": {
+      "type": "object",
+      "properties": {
+        "hash": {
+          "type": "string",
+          "description": "MD5 hex digest of the content"
+        },
+        "bytes": {
+          "type": "integer",
+          "description": "UTF-8 byte length of the content"
+        },
+        "content": {
+          "type": "string",
+          "description": "Inline content string. Present when this format targets the dataset (a \"*-dataset\" token). May co-exist with \"key\"/\"url\" when the format also targets the key-value store."
+        },
+        "key": {
+          "type": "string",
+          "description": "Key-value store key. Present when this format targets the key-value store (a \"*-kvs\" token). May co-exist with inline \"content\" when the format also targets the dataset."
+        },
+        "url": {
+          "type": "string",
+          "description": "Public URL to the key-value store item. Present when stored to a public store."
+        }
+      },
+      "description": "Extracted plain text. Present when a \"txt-*\" token is in save."
+    },
+    "markdown": {
+      "type": "object",
+      "properties": {
+        "hash": {
+          "type": "string",
+          "description": "MD5 hex digest of the content"
+        },
+        "bytes": {
+          "type": "integer",
+          "description": "UTF-8 byte length of the content"
+        },
+        "content": {
+          "type": "string",
+          "description": "Inline content string. Present when this format targets the dataset (a \"*-dataset\" token). May co-exist with \"key\"/\"url\" when the format also targets the key-value store."
+        },
+        "key": {
+          "type": "string",
+          "description": "Key-value store key. Present when this format targets the key-value store (a \"*-kvs\" token). May co-exist with inline \"content\" when the format also targets the dataset."
+        },
+        "url": {
+          "type": "string",
+          "description": "Public URL to the key-value store item. Present when stored to a public store."
+        }
+      },
+      "description": "Extracted Markdown. Present when a \"markdown-*\" token is in save."
+    },
+    "html": {
+      "type": "object",
+      "properties": {
+        "hash": {
+          "type": "string",
+          "description": "MD5 hex digest of the content"
+        },
+        "bytes": {
+          "type": "integer",
+          "description": "UTF-8 byte length of the content"
+        },
+        "content": {
+          "type": "string",
+          "description": "Inline content string. Present when this format targets the dataset (a \"*-dataset\" token). May co-exist with \"key\"/\"url\" when the format also targets the key-value store."
+        },
+        "key": {
+          "type": "string",
+          "description": "Key-value store key. Present when this format targets the key-value store (a \"*-kvs\" token). May co-exist with inline \"content\" when the format also targets the dataset."
+        },
+        "url": {
+          "type": "string",
+          "description": "Public URL to the key-value store item. Present when stored to a public store."
+        }
+      },
+      "description": "Readable cleaned HTML. Present when an \"html-*\" token is in save."
+    },
+    "minifiedHtml": {
+      "type": "object",
+      "properties": {
+        "hash": {
+          "type": "string",
+          "description": "MD5 hex digest of the content"
+        },
+        "bytes": {
+          "type": "integer",
+          "description": "UTF-8 byte length of the content"
+        },
+        "content": {
+          "type": "string",
+          "description": "Inline content string. Present when this format targets the dataset (a \"*-dataset\" token). May co-exist with \"key\"/\"url\" when the format also targets the key-value store."
+        },
+        "key": {
+          "type": "string",
+          "description": "Key-value store key. Present when this format targets the key-value store (a \"*-kvs\" token). May co-exist with inline \"content\" when the format also targets the dataset."
+        },
+        "url": {
+          "type": "string",
+          "description": "Public URL to the key-value store item. Present when stored to a public store."
+        }
+      },
+      "description": "Compact cleaned HTML. Present when a \"minified-html-*\" token is in save."
+    },
+    "images": {
+      "type": "array",
+      "description": "Images stored in the key-value store by the save image-handling mode (imageHandling: \"save\") — one reference per stored image, in document order. Absent in other image-handling modes."
+    },
+    "markdownSource": {
+      "type": "object",
+      "properties": {
+        "mechanism": {
+          "type": "string",
+          "enum": ["response", "alternate", "negotiated", "sibling"],
+          "description": "Discovery method: \"response\" for Markdown returned by the page request, \"alternate\" for an advertised same-origin link, \"negotiated\" for an Accept-based refetch, or \"sibling\" for a .md URL probe"
+        },
+        "url": {
+          "type": "string",
+          "description": "Source URL of the fetched Markdown representation"
+        },
+        "verbatim": {
+          "type": "boolean",
+          "description": "True when the Markdown output uses the served body after removing source front matter and applying this run's layout. False when output was converted from cleaned HTML or when the record contains no Markdown output."
+        }
+      },
+      "description": "Identifies content obtained from an origin-published Markdown representation through enabled markdownDiscovery. Omitted for content extracted from page HTML."
+    },
+    "errors": {
+      "type": "array",
+      "description": "Error messages from the final attempt"
+    },
+    "retryCount": {
+      "type": "integer",
+      "description": "Number of retries before the request was abandoned"
+    },
+    "skipReason": {
+      "type": "string",
+      "enum": ["robotsTxt", "limit", "enqueueLimit", "filters", "redirect", "depth"],
+      "description": "Why the URL was skipped"
+    }
+  },
+  "views": {
+    "overview": {
+      "title": "Overview",
+      "transformation": {
+        "fields": [
+          "crawl.loadedUrl",
+          "crawl.httpStatusCode",
+          "metadata.title",
+          "metadata.languageCode"
+        ]
+      },
+      "display": {
+        "component": "table",
+        "properties": {
+          "crawl.loadedUrl": {
+            "label": "URL",
+            "format": "link"
+          },
+          "crawl.httpStatusCode": {
+            "label": "Status",
+            "format": "number"
+          },
+          "metadata.title": {
+            "label": "Title",
+            "format": "text"
+          },
+          "metadata.languageCode": {
+            "label": "Language",
+            "format": "text"
+          }
+        }
+      }
+    }
+  }
+}
