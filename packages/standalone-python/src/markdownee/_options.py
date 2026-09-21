@@ -58,9 +58,9 @@ class CrawlOptions(FetchOptions, total=False):
     selector: str
     globs: list[str]
     exclude: list[str]
-    max_requests_per_crawl: int
-    max_crawl_depth: int
-    initial_concurrency: int
+    max_requests_per_crawl: int | None
+    max_crawl_depth: int | None
+    initial_concurrency: int | None
     max_concurrency: int
     keep_url_fragment: bool
 
@@ -100,9 +100,9 @@ class Options(BaseModel):
     selector: str = ""
     globs: list[str] | None = None
     exclude: list[str] | None = None
-    max_requests_per_crawl: int = 100
-    max_crawl_depth: int = 3
-    initial_concurrency: int = 1
+    max_requests_per_crawl: int | None = None
+    max_crawl_depth: int | None = None
+    initial_concurrency: int | None = None
     max_concurrency: int = 5
     keep_url_fragment: bool = False
 
@@ -161,23 +161,28 @@ def validate_options(values: Mapping[str, object], *, single: bool = False) -> O
         "max_image_bytes",
         "max_image_pixels",
         "max_concurrency",
+        "max_requests_per_crawl",
+        "initial_concurrency",
     }
     nonnegative = {
-        "max_requests_per_crawl",
         "max_crawl_depth",
         "max_image_edge",
         "max_scroll_height",
         "wait_for_dynamic_content",
         "max_retries",
-        "initial_concurrency",
     }
     for key in positive | nonnegative:
         value = getattr(options, key)
+        if value is None:
+            continue
         if not isinstance(value, (int, float)) or not math.isfinite(value):
             raise MarkdowneeError(f"{key} must be finite")
         if value < 0 or (key in positive and value == 0):
             raise MarkdowneeError(f"{key} is outside its allowed range")
-    if options.initial_concurrency > options.max_concurrency:
+    if (
+        options.initial_concurrency is not None
+        and options.initial_concurrency > options.max_concurrency
+    ):
         raise MarkdowneeError("initial_concurrency must not exceed max_concurrency")
     validate_proxies(options.proxy or [])
     if single and options.image_handling == "save":

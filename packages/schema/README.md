@@ -73,10 +73,10 @@ interface MarkdowneeInputType {
   respectRobotsTxtFile: boolean;
   initialCookies?: Array<unknown>;
   customHttpHeaders?: Record<string, string>;
-  maxRequestsPerCrawl: number;
-  maxResultsPerCrawl: number;
-  maxCrawlDepth: number;
-  initialConcurrency: number;
+  maxRequestsPerCrawl?: number;
+  maxResultsPerCrawl?: number;
+  maxCrawlDepth?: number;
+  initialConcurrency?: number;
   maxConcurrency: number;
   maxRequestRetries: number;
   mode: 'precision' | 'balanced' | 'recall' | 'keep';

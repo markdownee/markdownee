@@ -196,13 +196,17 @@ async def _run(
         "http_client": http_client,
         "max_request_retries": options.max_retries,
         "max_session_rotations": 0,
-        "max_requests_per_crawl": options.max_requests_per_crawl or None,
-        "max_crawl_depth": options.max_crawl_depth or None,
+        "max_requests_per_crawl": options.max_requests_per_crawl,
+        "max_crawl_depth": options.max_crawl_depth,
         "respect_robots_txt_file": options.respect_robots_txt,
         "request_handler_timeout": timedelta(seconds=timeout),
         "concurrency_settings": ConcurrencySettings(
-            desired_concurrency=options.initial_concurrency or min(10, options.max_concurrency),
             max_concurrency=options.max_concurrency,
+            desired_concurrency=(
+                options.initial_concurrency
+                if options.initial_concurrency is not None
+                else min(10, options.max_concurrency)
+            ),
         ),
         "configure_logging": False,
     }
@@ -225,6 +229,7 @@ async def _run(
         crawler = PlaywrightCrawler(
             **common,
             browser_type=options.crawler_type,
+            browser_launch_options={"chromium_sandbox": False},
             headless=options.headless,
             navigation_timeout=timedelta(seconds=options.navigation_timeout),
             browser_new_context_options=context_options,

@@ -1132,13 +1132,12 @@ export function createMarkdowneeCrawler(
         ...(Object.keys(cheerioSessionPoolOpts).length > 0
           ? { sessionPoolOptions: cheerioSessionPoolOpts }
           : {}),
-        maxRequestsPerCrawl:
-          opts.maxRequestsPerCrawl && opts.maxRequestsPerCrawl > 0
-            ? opts.maxRequestsPerCrawl
-            : undefined,
+        maxRequestsPerCrawl: opts.maxRequestsPerCrawl,
         maxRequestRetries: opts.maxRetries ?? 3,
         maxSessionRotations: opts.maxSessionRotations ?? 10,
-        ...(opts.initialConcurrency ? { minConcurrency: opts.initialConcurrency } : {}),
+        ...(opts.initialConcurrency !== undefined
+          ? { minConcurrency: opts.initialConcurrency }
+          : {}),
         ...(opts.maxConcurrency !== undefined ? { maxConcurrency: opts.maxConcurrency } : {}),
         ...(opts.navigationTimeoutSecs !== undefined
           ? { requestHandlerTimeoutSecs: opts.navigationTimeoutSecs }
@@ -1263,13 +1262,10 @@ export function createMarkdowneeCrawler(
     useSessionPool,
     persistCookiesPerSession: useSessionPool,
     sessionPoolOptions,
-    maxRequestsPerCrawl:
-      opts.maxRequestsPerCrawl && opts.maxRequestsPerCrawl > 0
-        ? opts.maxRequestsPerCrawl
-        : undefined,
+    maxRequestsPerCrawl: opts.maxRequestsPerCrawl,
     maxRequestRetries: opts.maxRetries ?? 3,
     maxSessionRotations: opts.maxSessionRotations ?? 10,
-    ...(opts.initialConcurrency ? { minConcurrency: opts.initialConcurrency } : {}),
+    ...(opts.initialConcurrency !== undefined ? { minConcurrency: opts.initialConcurrency } : {}),
     ...(opts.maxConcurrency !== undefined ? { maxConcurrency: opts.maxConcurrency } : {}),
     ...(opts.respectRobotsTxt !== undefined ? { respectRobotsTxtFile: opts.respectRobotsTxt } : {}),
     proxyConfiguration: opts.proxyConfiguration,

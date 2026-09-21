@@ -435,8 +435,7 @@ const CRAWL: CliSurfaceOption[] = [
     flag: '--max-requests-per-crawl',
     field: 'maxRequestsPerCrawl',
     kind: 'scalar',
-    description: 'Max requests to handle (0 = unlimited)',
-    defaultLabel: 'unlimited',
+    description: 'Max requests to handle (omit for no limit)',
     subcommands: ['crawl'],
   },
   {
@@ -444,8 +443,7 @@ const CRAWL: CliSurfaceOption[] = [
     flag: '--max-crawl-depth',
     field: 'maxCrawlDepth',
     kind: 'scalar',
-    description: 'Max link depth from start URLs (0 = unlimited)',
-    defaultLabel: 'unlimited',
+    description: 'Max link depth from start URLs (0 = start URLs only; omit for no limit)',
     subcommands: ['crawl'],
   },
   {
@@ -495,7 +493,7 @@ const CRAWL: CliSurfaceOption[] = [
     flag: '--initial-concurrency',
     field: 'initialConcurrency',
     kind: 'scalar',
-    description: 'Initial parallel requests (0 = Crawlee default)',
+    description: 'Initial parallel requests (omit for Crawlee default)',
     subcommands: ['crawl'],
   },
   {
@@ -512,8 +510,7 @@ const CRAWL: CliSurfaceOption[] = [
     flag: '--max-results',
     field: 'maxResultsPerCrawl',
     kind: 'scalar',
-    description: 'Max results per crawl (0 = unlimited)',
-    defaultLabel: 'unlimited',
+    description: 'Max results per crawl (omit for no limit)',
     subcommands: ['crawl'],
   },
   {

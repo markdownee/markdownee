@@ -45,7 +45,7 @@ jobs:
           REF: ${{ github.ref }}
         run: |
           set -euo pipefail
-          [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-(alpha|beta|rc)\.[0-9]+)?$ ]] || exit 1
+          [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || exit 1
           expected="${GITHUB_REPOSITORY}/.github/workflows/release-pypi.yml@refs/tags/${TAG}"
           if [ "$WORKFLOW_REF" != "$expected" ] || [ "$REF" != "refs/tags/${TAG}" ]; then
             echo "workflow_ref=${WORKFLOW_REF}" >&2
@@ -58,6 +58,8 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
+      - name: Require the synchronized stable release family
+        run: node scripts/check-engine-release-family.mjs markdownee --tag "$TAG"
 
       - name: Require the tag, the tree and both manifests to agree
         shell: bash
@@ -65,17 +67,6 @@ jobs:
           set -euo pipefail
           [ "$(git rev-parse "refs/tags/${TAG}^{commit}")" = "$GITHUB_SHA" ]
           ! git ls-files | grep -Eiq '\.(node|wasm|so|dylib|dll|exe|a|o|pyd|zip|jar|whl|tgz|tar|tar\.gz|crate)$'
-          npm_version="$(node -p "require('./packages/standalone/package.json').version")"
-          [ "v${npm_version}" = "${TAG}" ] \
-            || { echo "npm manifest ${npm_version} != tag ${TAG}" >&2; exit 1; }
-          py_version="$(sed -n 's/^version[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' \
-            packages/standalone-python/pyproject.toml | head -1)"
-          # The project's npm-to-PEP-440 convention, applied without a build dependency:
-          # 0.1.0-alpha.2 -> 0.1.0a2, 0.1.0-beta.1 -> 0.1.0b1, 0.1.0-rc.1 -> 0.1.0rc1, 1.2.3 -> 1.2.3.
-          normalised="$(printf '%s' "$npm_version" \
-            | sed -e 's/-alpha\./a/' -e 's/-beta\./b/' -e 's/-rc\./rc/')"
-          [ "$py_version" = "$normalised" ] \
-            || { echo "pyproject ${py_version} != normalised npm ${normalised}" >&2; exit 1; }
 
   wheel:
     name: build and verify native Python distributions

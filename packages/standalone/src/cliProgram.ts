@@ -357,14 +357,15 @@ function addCrawlOptions(cmd: Command): Command {
       .option('-c, --config-file <path>', cliOptionDescription('config-file'))
       .option('--purge', cliOptionDescription('purge'))
       .addOption(
-        new Option('--max-requests-per-crawl <n>', cliOptionDescription('max-requests-per-crawl'))
-          .argParser(toInt)
-          .default(s.maxRequestsPerCrawl.def.defaultValue, 'unlimited'),
+        new Option(
+          '--max-requests-per-crawl <n>',
+          cliOptionDescription('max-requests-per-crawl'),
+        ).argParser(toInt),
       )
       .addOption(
-        new Option('--max-crawl-depth <n>', cliOptionDescription('max-crawl-depth'))
-          .argParser(toInt)
-          .default(s.maxCrawlDepth.def.defaultValue, 'unlimited'),
+        new Option('--max-crawl-depth <n>', cliOptionDescription('max-crawl-depth')).argParser(
+          toInt,
+        ),
       )
       .option('--globs <pattern>', cliOptionDescription('globs'), collectValues, [])
       .option('--exclude <pattern>', cliOptionDescription('exclude'), collectValues, [])
@@ -378,9 +379,7 @@ function addCrawlOptions(cmd: Command): Command {
           .default(s.maxConcurrency.def.defaultValue),
       )
       .addOption(
-        new Option('--max-results <n>', cliOptionDescription('max-results'))
-          .argParser(toInt)
-          .default(s.maxResultsPerCrawl.def.defaultValue, 'unlimited'),
+        new Option('--max-results <n>', cliOptionDescription('max-results')).argParser(toInt),
       )
       .option(
         '--save <token>',

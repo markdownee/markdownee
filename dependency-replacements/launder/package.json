@@ -1,6 +1,6 @@
 {
   "name": "@trafilaturacore/launder-replacement",
-  "version": "0.1.0-alpha.2",
+  "version": "0.1.0",
   "private": true,
   "description": "Licence-clean drop-in for the launder package's naughtyHref export, installed in its place through a pnpm override scoped to sanitize-html.",
   "license": "MIT",

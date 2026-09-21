@@ -57,7 +57,7 @@ export function buildCrawlerOpts(
     maxConcurrency: input.maxConcurrency,
     navigationTimeoutSecs: input.navigationTimeoutSecs,
     waitUntil: input.waitUntil,
-    maxResults: input.maxResultsPerCrawl > 0 ? input.maxResultsPerCrawl : undefined,
+    maxResults: input.maxResultsPerCrawl,
     selector: input.selector,
     maxCrawlDepth: input.maxCrawlDepth,
     globs: input.globs.map((g) => g.glob).filter((g): g is string => Boolean(g)),

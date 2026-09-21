@@ -1104,11 +1104,7 @@ export function createHandler(opts: HandlerOpts): RequestHandler<PlaywrightCrawl
 async function enqueueLinks(context: PlaywrightCrawlingContext, opts: HandlerOpts): Promise<void> {
   const rawDepth = context.request.userData?.depth;
   const currentDepth = typeof rawDepth === 'number' ? rawDepth : 0;
-  if (
-    opts.maxCrawlDepth !== undefined &&
-    opts.maxCrawlDepth !== 0 &&
-    currentDepth >= opts.maxCrawlDepth
-  ) {
+  if (opts.maxCrawlDepth !== undefined && currentDepth >= opts.maxCrawlDepth) {
     return;
   }
   const newDepth = currentDepth + 1;
@@ -2006,11 +2002,7 @@ async function enqueueLinksCheerio(
 ): Promise<void> {
   const rawDepth = context.request.userData?.depth;
   const currentDepth = typeof rawDepth === 'number' ? rawDepth : 0;
-  if (
-    opts.maxCrawlDepth !== undefined &&
-    opts.maxCrawlDepth !== 0 &&
-    currentDepth >= opts.maxCrawlDepth
-  ) {
+  if (opts.maxCrawlDepth !== undefined && currentDepth >= opts.maxCrawlDepth) {
     return;
   }
   const newDepth = currentDepth + 1;
@@ -2038,11 +2030,7 @@ async function enqueueLinksAdaptive(
 ): Promise<void> {
   const rawDepth = context.request.userData?.depth;
   const currentDepth = typeof rawDepth === 'number' ? rawDepth : 0;
-  if (
-    opts.maxCrawlDepth !== undefined &&
-    opts.maxCrawlDepth !== 0 &&
-    currentDepth >= opts.maxCrawlDepth
-  ) {
+  if (opts.maxCrawlDepth !== undefined && currentDepth >= opts.maxCrawlDepth) {
     return;
   }
   const newDepth = currentDepth + 1;

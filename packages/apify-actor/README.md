@@ -2,7 +2,7 @@
   <tbody>
     <tr>
       <td>
-        <img width="220" src="https://www.markdownee.com/media/cover-mini.svg" alt="Markdownee" />
+        <img width="220" src="https://www.markdownee.com/media/logo.svg" alt="Markdownee" />
         <br />
         <a href="https://www.npmjs.com/package/@markdownee/markdownee"><img src="https://img.shields.io/npm/v/%40markdownee%2Fmarkdownee.svg" alt="npm version" /></a>
         <br />
@@ -30,27 +30,20 @@
   </tbody>
 </table>
 
-Run hosted crawls that collect page content as text, Markdown, or HTML. Configure
-which links to follow, what extraction should retain, and where each format is
-stored. These outputs can feed research collections, retrieval systems, and
-dataset preparation. [Token savings](https://www.markdownee.com/about/#token-efficient-output-for-llms)
-depend on the pages, settings, and downstream tokenizer.
+Markdownee is a web scraper that crawls websites and saves their content as
+**Markdown**, HTML or plain text for LLMs, retrieval pipelines, and research datasets.
 
-- Boilerplate removal is powered by **[Trafilatura Core](https://www.trafilaturacore.com/)**, our
-  **open-source pure-TypeScript port** of
-  [Trafilatura](https://www.markdownee.com/trafilatura/). Its **extraction core** is a
-  direct port of Python Trafilatura — with
-  [go-trafilatura](https://github.com/markusmobius/go-trafilatura) used only as a DOM translation
-  aid — and applies **Trafilatura's own heuristics** to strip navigation, sidebars, footers, and
-  similar clutter
-- Fetch rendered pages with [Crawlee](https://crawlee.dev/) and
-  [Playwright](https://playwright.dev/), or choose HTTP-only Cheerio.
-- Run the extraction engine without a Python runtime or GPU.
-- Use the hosted Actor or self-host through the
-  [npm CLI](https://www.markdownee.com/help/npm/) or
-  [npm library](https://www.markdownee.com/help/npm-lib/); the open-source code
-  is on [GitHub](https://github.com/markdownee/markdownee).
-- Enable image downloading for stored content that needs image files.
+Choose which links to follow, set page and depth limits, and select how much page
+content to keep. Control tables, links, images, and user comments separately.
+
+Boilerplate removal is powered by [Trafilatura Core](https://www.trafilaturacore.com/), **our open-source fork of [Trafilatura](https://www.markdownee.com/trafilatura/)**. The **Core** in its name means it is reduced to one task: main-content extraction and boilerplate removal. Other packages handle output conversion, including Markdown. Trafilatura Core is ported from the original Python [Trafilatura](https://github.com/adbar/trafilatura), with [go-trafilatura](https://github.com/markusmobius/go-trafilatura) as a DOM translation aid. [Crawlee](https://crawlee.dev/) handles crawling and uses [Playwright](https://playwright.dev/) for browser rendering.
+
+- Two language versions — **TypeScript** and **Python**: use this Actor, the
+  [npm CLI](https://www.markdownee.com/help/npm/) and
+  [npm library](https://www.markdownee.com/help/npm-lib/), or the
+  [Python library](https://www.markdownee.com/help/pypi/). Source is on
+  [GitHub](https://github.com/markdownee/markdownee).
+- **Optional image downloading:** keep local images with stored content.
 
 ## Configure a run in Console
 
@@ -68,14 +61,15 @@ Starting URLs are required. The
 [Input tab](https://apify.com/markdownee/crawler/input-schema?fpr=glueo) lists the
 complete contract and defaults.
 
-Collect a blog section with Markdown storage:
+Collect a bounded set of Wikipedia articles with Markdown storage:
 
 ```json
 {
-  "startUrls": [{ "url": "https://blog.example.com/" }],
+  "startUrls": [{ "url": "https://en.wikipedia.org/wiki/Web_scraping" }],
   "selector": "a[href]",
-  "globs": [{ "glob": "https://blog.example.com/**" }],
+  "globs": [{ "glob": "https://en.wikipedia.org/wiki/**" }],
   "maxCrawlDepth": 2,
+  "maxRequestsPerCrawl": 10,
   "save": ["markdown-kvs"]
 }
 ```
@@ -84,7 +78,7 @@ Request several formats for one starting page:
 
 ```json
 {
-  "startUrls": [{ "url": "https://example.com/article" }],
+  "startUrls": [{ "url": "https://en.wikipedia.org/wiki/Web_scraping" }],
   "maxRequestsPerCrawl": 1,
   "save": ["markdown-kvs", "minified-html-dataset", "original-kvs"]
 }
@@ -94,7 +88,7 @@ Store readable and compact HTML independently:
 
 ```json
 {
-  "startUrls": [{ "url": "https://example.com/article" }],
+  "startUrls": [{ "url": "https://en.wikipedia.org/wiki/Web_scraping" }],
   "save": ["html-kvs", "minified-html-dataset", "markdown-kvs"]
 }
 ```
@@ -108,8 +102,8 @@ Look for Markdown published by a documentation site:
 
 ```json
 {
-  "startUrls": [{ "url": "https://docs.example.com/" }],
-  "globs": [{ "glob": "https://docs.example.com/**" }],
+  "startUrls": [{ "url": "https://developers.cloudflare.com/fundamentals/reference/markdown-for-agents/" }],
+  "globs": [{ "glob": "https://developers.cloudflare.com/fundamentals/**" }],
   "markdownDiscovery": "alternate",
   "save": ["markdown-kvs"]
 }
@@ -126,13 +120,13 @@ Configure proxies and a persistent session pool:
 
 ```json
 {
-  "startUrls": [{ "url": "https://shop.example.com/" }],
+  "startUrls": [{ "url": "https://en.wikipedia.org/wiki/Web_scraping" }],
   "proxyConfiguration": {
     "useApifyProxy": true,
     "apifyProxyGroups": ["RESIDENTIAL"]
   },
   "proxyRotation": "recommended",
-  "sessionPoolName": "shop-example",
+  "sessionPoolName": "wikipedia",
   "waitUntil": "networkidle"
 }
 ```
@@ -184,22 +178,19 @@ This illustrative record uses sample metadata, hashes, and byte counts:
 
 ```json
 {
-  "url": "https://blog.example.com/why-rag-matters",
+  "url": "https://en.wikipedia.org/wiki/Web_scraping",
   "status": "success",
   "metadata": {
-    "title": "Why RAG Matters",
-    "author": "Jane Doe",
-    "date": "2026-01-15",
-    "description": "A practical look at retrieval-augmented generation.",
-    "siteName": "Example Blog",
+    "title": "Web scraping",
+    "siteName": "Wikipedia",
     "languageCode": "en"
   },
   "crawl": {
-    "loadedUrl": "https://blog.example.com/why-rag-matters",
+    "loadedUrl": "https://en.wikipedia.org/wiki/Web_scraping",
     "scrapedAt": "2026-05-31T10:00:00.000Z",
     "httpStatusCode": 200,
     "depth": 1,
-    "referrerUrl": "https://blog.example.com/"
+    "referrerUrl": "https://en.wikipedia.org/"
   },
   "original": {
     "hash": "f8e6bd335e04d03e1be6798c2c72349c",

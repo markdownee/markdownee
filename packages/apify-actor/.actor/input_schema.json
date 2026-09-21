@@ -126,38 +126,34 @@
     "maxRequestsPerCrawl": {
       "title": "Max requests per crawl",
       "type": "integer",
-      "description": "Maximum number of requests the crawler will handle. Counts handled page outcomes (successes and final failures), including start URLs and pagination pages. The crawler automatically finishes after reaching this number. 0 means unlimited.",
+      "description": "Maximum number of requests the crawler will handle. Counts handled page outcomes (successes and final failures), including start URLs and pagination pages. The crawler automatically finishes after reaching this number. Omit for no limit.",
       "editor": "number",
-      "default": 0,
-      "minimum": 0,
+      "minimum": 1,
       "maximum": 9007199254740991
     },
     "maxResultsPerCrawl": {
       "title": "Max results",
       "type": "integer",
-      "description": "Maximum number of results that will be saved to dataset. The scraper will terminate after reaching this number. 0 means unlimited.",
+      "description": "Maximum number of results that will be saved to dataset. The scraper will terminate after reaching this number. Omit for no limit.",
       "editor": "number",
-      "default": 0,
-      "minimum": 0,
+      "minimum": 1,
       "maximum": 9007199254740991,
       "unit": "results"
     },
     "maxCrawlDepth": {
       "title": "Max crawling depth",
       "type": "integer",
-      "description": "Maximum link depth from Start URLs. Pages discovered further from start URLs than this limit will not be crawled. 0 means unlimited.",
+      "description": "Maximum link depth from Start URLs. Pages discovered further from start URLs than this limit will not be crawled. Omit for no limit; 0 crawls only the Start URLs.",
       "editor": "number",
-      "default": 0,
       "minimum": 0,
       "maximum": 9007199254740991
     },
     "initialConcurrency": {
       "title": "Initial concurrency",
       "type": "integer",
-      "description": "Initial number of browser pages or HTTP clients running in parallel. Crawlee auto-scales up to maxConcurrency. 0 lets Crawlee pick the default.",
+      "description": "Initial number of browser pages or HTTP clients running in parallel. Crawlee auto-scales up to maxConcurrency. Omit to use the Crawlee default.",
       "editor": "number",
-      "default": 0,
-      "minimum": 0,
+      "minimum": 1,
       "maximum": 9007199254740991
     },
     "maxConcurrency": {

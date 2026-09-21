@@ -208,19 +208,19 @@ export const MarkdowneeInput = z
 
     maxRequestsPerCrawl: z
       .int()
-      .min(0)
-      .default(0)
+      .min(1)
+      .optional()
       .describe(
-        'Maximum number of requests the crawler will handle. Counts handled page outcomes (successes and final failures), including start URLs and pagination pages. The crawler automatically finishes after reaching this number. 0 means unlimited.',
+        'Maximum number of requests the crawler will handle. Counts handled page outcomes (successes and final failures), including start URLs and pagination pages. The crawler automatically finishes after reaching this number. Omit for no limit.',
       )
       .meta({ title: 'Max requests per crawl' }),
 
     maxResultsPerCrawl: z
       .int()
-      .min(0)
-      .default(0)
+      .min(1)
+      .optional()
       .describe(
-        'Maximum number of results that will be saved to dataset. The scraper will terminate after reaching this number. 0 means unlimited.',
+        'Maximum number of results that will be saved to dataset. The scraper will terminate after reaching this number. Omit for no limit.',
       )
       .meta({ title: 'Max results' })
       .register(apifyRegistry, { unit: 'results' }),
@@ -228,18 +228,18 @@ export const MarkdowneeInput = z
     maxCrawlDepth: z
       .int()
       .min(0)
-      .default(0)
+      .optional()
       .describe(
-        'Maximum link depth from Start URLs. Pages discovered further from start URLs than this limit will not be crawled. 0 means unlimited.',
+        'Maximum link depth from Start URLs. Pages discovered further from start URLs than this limit will not be crawled. Omit for no limit; 0 crawls only the Start URLs.',
       )
       .meta({ title: 'Max crawling depth' }),
 
     initialConcurrency: z
       .int()
-      .min(0)
-      .default(0)
+      .min(1)
+      .optional()
       .describe(
-        'Initial number of browser pages or HTTP clients running in parallel. Crawlee auto-scales up to maxConcurrency. 0 lets Crawlee pick the default.',
+        'Initial number of browser pages or HTTP clients running in parallel. Crawlee auto-scales up to maxConcurrency. Omit to use the Crawlee default.',
       )
       .meta({ title: 'Initial concurrency' }),
 

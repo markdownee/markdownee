@@ -4,7 +4,7 @@
   <tbody>
     <tr>
       <td>
-        <img width="220" src="media/cover-mini.svg" alt="Markdownee" />
+        <img width="220" src="media/logo.svg" alt="Markdownee" />
         <br />
         <a href="https://www.npmjs.com/package/@markdownee/markdownee"><img src="https://img.shields.io/npm/v/%40markdownee%2Fmarkdownee.svg" alt="npm version" /></a>
         <br />
@@ -34,87 +34,56 @@
   </tbody>
 </table>
 
-Markdownee collects web pages and exports their content for text analysis,
-retrieval systems, and dataset preparation. Choose Markdown, plain text,
-readable HTML, compact HTML, or the original page HTML. The fetching layer uses
-[Crawlee](https://crawlee.dev/) with [Playwright](https://playwright.dev/) for
-browser rendering and Cheerio for HTTP-only requests. Extraction then runs in
-[Trafilatura Core](https://www.trafilaturacore.com/), which processes supplied HTML
-offline.
+Markdownee is a web scraper that crawls websites and saves their content as
+**Markdown**, HTML or plain text for LLMs, retrieval pipelines, and research datasets.
 
-Run a single-page command, integrate the npm library into a Node.js application,
-or configure a hosted [Apify Actor](https://apify.com/markdownee/crawler?fpr=glueo)
-run. TypeScript remains the primary implementation. The maintained alpha
-[native Python library](https://pypi.org/project/markdownee/) uses Crawlee Python
-and Python Trafilatura Core, without a bundled Node product engine or product CLI.
-Both languages live in this repository; their supported controls and result
-shapes are documented separately.
+Choose which links to follow, set page and depth limits, and select how much page
+content to keep. Control tables, links, images, and user comments separately.
 
-Start with a small sample and adjust the crawl to the pages you need. Link
-selectors, URL globs, sitemaps, and depth limits bound collection. The adaptive
-crawler uses browser rendering by default; a positive
-`renderingTypeDetectionRatio` enables detection of pages that can use HTTP.
-Proxy rotation and session pools provide request controls when sites restrict
-access. Cookie handling attempts to remove or resolve consent interruptions
-before extraction; some pages remain inaccessible. Choose `precision`,
-`balanced`, or `recall` to adjust content selection, or `keep` to clean the
-whole document without selecting its main content. Tables, links, images, and
-comments have separate controls; canonical URLs or content hashes can be used
-to deduplicate results.
+Boilerplate removal is powered by [Trafilatura Core](https://www.trafilaturacore.com/), **our open-source fork of [Trafilatura](https://www.markdownee.com/trafilatura/)**. The **Core** in its name means it is reduced to one task: main-content extraction and boilerplate removal. Other packages handle output conversion, including Markdown. Trafilatura Core is ported from the original Python [Trafilatura](https://github.com/adbar/trafilatura), with [go-trafilatura](https://github.com/markusmobius/go-trafilatura) as a DOM translation aid. [Crawlee](https://crawlee.dev/) handles crawling and uses [Playwright](https://playwright.dev/) for browser rendering.
+
+Two language versions — **TypeScript** and **Python**: use the **npm CLI or library**, the hosted
+[Apify Actor](https://apify.com/markdownee/crawler?fpr=glueo), or the
+[native Python library](https://pypi.org/project/markdownee/). The npm CLI,
+library, and Actor use TypeScript. Python uses Crawlee Python and Python
+Trafilatura Core without a bundled Node product engine or product CLI. Their
+supported controls and result shapes are documented separately.
+
+Start with a sample, then bound collection with link selectors, URL globs,
+sitemaps, and depth or page limits. Adjust content selection with `precision`,
+`balanced`, or `recall`; choose `keep` to clean the whole document. Tables,
+links, images, and comments have separate controls. Proxy rotation, session
+pools, and consent handling help manage requests; some pages remain inaccessible.
+Canonical URLs or content hashes can deduplicate results. Try one page in the
+[playground](https://www.markdownee.com/), then run your collection through the
+interface that suits your application.
 
 **Website & docs:** [markdownee.com](https://www.markdownee.com) · **Try it:**
 [Apify Actor](https://apify.com/markdownee/crawler?fpr=glueo) · **Install:**
 [npm](https://www.npmjs.com/package/@markdownee/markdownee) ·
-[PyPI (alpha)](https://pypi.org/project/markdownee/)
+[PyPI](https://pypi.org/project/markdownee/)
 
 ## Contents
 
-- [Packages](#packages)
 - [Quick start](#quick-start)
 - [Why Markdownee](#why-markdownee)
 - [Features](#features)
 - [CLI usage](#cli-usage)
 - [Library usage](#library-usage)
-- [How it works](#how-it-works)
 - [Input schema](#input-schema)
 - [Credits](#credits)
-- [Contributing](#contributing)
 - [License](#license)
-
-## Packages
-
-```text
-packages/
-├── apify-actor/            # Apify Actor
-├── standalone/             # TypeScript CLI + library
-├── extraction/             # Pure extraction package (Trafilatura Core clean())
-├── conversion/             # Renders cleaned HTML → the output formats
-├── crawler/                # Shared Crawlee + Playwright crawler
-├── schema/                 # Shared Zod input + output schema
-└── standalone-python/      # Native Python library (no product CLI)
-```
 
 ## Quick start
 
 ```bash
 npm install @markdownee/markdownee
-npx markdownee fetch https://www.iana.org/help/example-domains \
+npx markdownee fetch https://en.wikipedia.org/wiki/Web_scraping \
   --crawler-type cheerio
 ```
 
 This command uses HTTP-only fetching and needs no browser installation. It
-writes Markdown to stdout and diagnostics to stderr. Example output, trimmed:
-
-```markdown
-# Example Domains
-
-As described in [RFC 2606](https://www.iana.org/go/rfc2606) and
-[RFC 6761](https://www.iana.org/go/rfc6761), a number of domains such
-as example.com and example.org are maintained for documentation
-purposes. These domains may be used as illustrative examples in
-documents without prior coordination with us. They are not available
-for registration or transfer.
-```
+writes extracted Markdown to stdout and diagnostics to stderr.
 
 For content populated by JavaScript, provision Chromium and use the default
 adaptive crawler. Choose the Firefox installation instead when using the
@@ -122,13 +91,13 @@ adaptive crawler. Choose the Firefox installation instead when using the
 
 ```bash
 npx playwright install chromium
-npx markdownee fetch https://example.com/
+npx markdownee fetch https://en.wikipedia.org/wiki/Web_scraping
 ```
 
 The native Python library has its own installation and defaults to HTTP fetching:
 
 ```bash
-pip install --pre markdownee
+pip install markdownee
 # Only for browser crawling:
 playwright install chromium
 ```
@@ -136,7 +105,7 @@ playwright install chromium
 ```python
 from markdownee import fetch
 
-result = fetch("https://example.com/", formats=["markdown", "txt"])
+result = fetch("https://en.wikipedia.org/wiki/Web_scraping", formats=["markdown", "txt"])
 print(result.get("markdown"))
 ```
 
@@ -158,44 +127,27 @@ installation. Continue with the guide for your interface:
 
 <!-- This block is auto-generated by @markdownee/gen-md-regions. Do not edit. -->
 
-Choose a fetching method, select the content to retain, and export the result for your
-application. Markdownee supports **research corpora, retrieval pipelines, and training-data
-preparation**. Its [Markdown output](https://www.markdownee.com/about/#token-efficient-output-for-llms)
-removes HTML syntax; the token saving depends on the page and extraction settings.
+Choose what to fetch, what content to retain, and where to save it.
+[Markdown output](https://www.markdownee.com/about/#token-efficient-output-for-llms)
+removes HTML syntax; token savings depend on the page and extraction settings.
 
-- Boilerplate removal is powered by **[Trafilatura Core](https://www.trafilaturacore.com/)**, our
-  **open-source pure-TypeScript port** of
-  [Trafilatura](https://www.markdownee.com/trafilatura/). Its **extraction core** is a
-  direct port of Python Trafilatura — with
-  [go-trafilatura](https://github.com/markusmobius/go-trafilatura) used only as a DOM translation
-  aid — and applies **Trafilatura's own heuristics** to strip navigation, sidebars, footers, and
-  similar clutter
-- Fetch JavaScript-rendered pages with **[Playwright](https://playwright.dev/)** before
-  extracting their HTML, or choose HTTP-only fetching
-- Use the primary **TypeScript** implementation on Node.js or the maintained alpha
-  [native Python library](https://www.markdownee.com/help/pypi/) with Crawlee Python
-  and Python Trafilatura Core; neither extraction path requires a GPU
-- Choose self-hosted execution through the
-  [npm CLI](https://www.markdownee.com/help/npm/) or
-  [npm library](https://www.markdownee.com/help/npm-lib/), run the
-  [hosted Apify Actor](https://apify.com/markdownee/crawler?fpr=glueo); the open-source code is on
-  [GitHub](https://github.com/markdownee/markdownee)
-- Enable **image downloading** when your output needs local image files
+Boilerplate removal is powered by [Trafilatura Core](https://www.trafilaturacore.com/).
+Trafilatura Core is ported from the original Python
+[Trafilatura](https://github.com/adbar/trafilatura), with
+[go-trafilatura](https://github.com/markusmobius/go-trafilatura) as a DOM
+translation aid. [Crawlee](https://crawlee.dev/) handles crawling and uses
+[Playwright](https://playwright.dev/) for browser rendering.
 
-|                    | Markdownee                                                             | Firecrawl                              | Jina Reader                                  | Crawl4AI                                          |
-| ------------------ | ---------------------------------------------------------------------- | -------------------------------------- | -------------------------------------------- | ------------------------------------------------- |
-| Content processing | Trafilatura Core heuristics                                            | Scraping and optional model extraction | Readability and Markdown conversion profiles | Markdown generation and optional filters          |
-| Runtime            | Node (primary TypeScript) · native Python (alpha)                      | hosted API / self-host                 | hosted API                                   | Python                                            |
-| Surfaces           | Online playground · Apify Actor · npm CLI · npm library · PyPI (alpha) | API · SDKs · self-hosted · MCP         | API                                          | Python library · crwl CLI · Docker REST API · MCP |
-| Output formats     | txt · markdown · html · minified-html · original                       | markdown · html · etc.                 | markdown · html · text · screenshot · etc.   | markdown · etc.                                   |
-| Crawling           | Crawlee + Playwright (adaptive / browser / HTTP)                       | built-in                               | none (single URL)                            | built-in                                          |
+Two language versions — **TypeScript** and **Python**: self-host with the
+[npm CLI](https://www.markdownee.com/help/npm/),
+[npm library](https://www.markdownee.com/help/npm-lib/), or
+[native Python library](https://www.markdownee.com/help/pypi/), or use the
+[hosted Apify Actor](https://apify.com/markdownee/crawler?fpr=glueo). The npm
+surfaces use Crawlee and TypeScript Trafilatura Core; Python uses Crawlee Python
+and Python Trafilatura Core. Neither extraction path requires a GPU. Source is on
+[GitHub](https://github.com/markdownee/markdownee).
 
-The comparison describes available interfaces, not measured quality or speed. See the
-[Firecrawl documentation](https://docs.firecrawl.dev/introduction),
-[Jina Reader architecture](https://github.com/jina-ai/reader/blob/main/architecture.md), and
-[Crawl4AI Markdown documentation](https://docs.crawl4ai.com/core/markdown-generation/)
-for each project's options. Jina Reader's ReaderLM profile is optional; the API and the
-ReaderLM model are distinct products.
+Optional image downloading keeps local images with extracted content.
 
 <!-- @generated:end name="why-markdownee" -->
 
@@ -222,8 +174,8 @@ Use `crawl` to store a crawl, `fetch` for immediate output, `export`
 to turn stored results into files, and `purge` to remove local storage:
 
 ```bash
-markdownee crawl https://example.com       # crawl into storage
-markdownee fetch https://example.com/  # one page to stdout
+markdownee crawl https://en.wikipedia.org/wiki/Web_scraping # crawl into storage
+markdownee fetch https://en.wikipedia.org/wiki/Web_scraping # one page to stdout
 markdownee export --output-dir ./out         # storage → files
 markdownee purge                             # clear the storage
 ```
@@ -232,9 +184,10 @@ To follow links, supply `--selector`; an empty selector adds no linked URLs.
 This example limits the crawl and chooses a destination for each format:
 
 ```bash
-markdownee crawl https://blog.example.com/ \
+markdownee crawl https://en.wikipedia.org/wiki/Web_scraping \
   --selector 'a[href]' \
-  --globs 'https://blog.example.com/**' \
+  --globs 'https://en.wikipedia.org/wiki/**' \
+  --max-requests-per-crawl 10 \
   --max-crawl-depth 2 \
   --save markdown-kvs --save minified-html-dataset
 ```
@@ -258,12 +211,12 @@ list to `run`. This example uses in-memory results:
 import { createCrawler, fetch } from '@markdownee/markdownee';
 
 // One page, nothing persisted
-const { markdown } = await fetch('https://example.com/');
+const { markdown } = await fetch('https://en.wikipedia.org/wiki/Web_scraping');
 
 // A crawl, results returned in memory
 const crawler = createCrawler({ maxRequestsPerCrawl: 10 });
 const { dataset, statistics } = await crawler.run([
-  'https://example.com/',
+  'https://en.wikipedia.org/wiki/Web_scraping',
 ]);
 console.log(statistics.requestsFinished, 'pages');
 ```
@@ -275,40 +228,6 @@ directory, without opening a Dataset or KVS.
 
 Library details: [npm package README](./packages/standalone/README.md) ·
 [markdownee.com/help/npm-lib](https://www.markdownee.com/help/npm-lib/).
-
-## How it works
-
-Fetching, extraction, and output have separate responsibilities:
-
-- **Crawl** — Crawlee obtains the document through the selected browser or
-  HTTP path. Adaptive rendering is the default; a positive
-  `renderingTypeDetectionRatio` enables detection for HTTP-only fetching.
-  Configured Ghostery filters, residual-container removal, and targeted
-  consent recovery run before extraction.
-- **Extract** — the rendered HTML is cleaned once by
-  [Trafilatura Core](https://www.trafilaturacore.com/), the `trafilaturacore` npm
-  dependency. Its extraction core is a direct port of Python
-  Trafilatura v2.2.0 and applies Trafilatura's own heuristics to strip
-  navigation, sidebars, footers, and similar clutter. It is pure TypeScript, so
-  there is no Python extraction runtime and nothing to compile on install.
-  `@markdownee/conversion` renders the selected formats from that cleaned
-  representation.
-- **Output** — save the requested `txt`, `markdown`, `html`, `minified-html`,
-  or `original` content to dataset/KVS destinations. Per-format hashes and
-  UTF-8 byte counts describe the stored content.
-
-`markdownDiscovery` can substitute an origin-published representation for HTML
-extraction. Its `alternate`, `negotiate`, and `probe` modes add advertised-link
-fetches, Accept-based negotiation, and sibling probing where the crawler path
-supports them. The default `off` leaves fetching unchanged. Budgets and
-validation bound discovery; unavailable or rejected representations fall back
-to HTML. Accepted Markdown supplies all formats and adds `markdownSource` to
-the record. Links still come from available page HTML; a page response that is
-itself Markdown contributes no HTML link frontier.
-
-The schema package supplies shared validation and generates interface-specific
-schemas and flag tables. The CLI, library, and Actor expose the subsets their
-respective execution and storage models support.
 
 ## Input schema
 
@@ -347,10 +266,10 @@ interface MarkdowneeInputType {
   respectRobotsTxtFile: boolean;
   initialCookies?: Array<unknown>;
   customHttpHeaders?: Record<string, string>;
-  maxRequestsPerCrawl: number;
-  maxResultsPerCrawl: number;
-  maxCrawlDepth: number;
-  initialConcurrency: number;
+  maxRequestsPerCrawl?: number;
+  maxResultsPerCrawl?: number;
+  maxCrawlDepth?: number;
+  initialConcurrency?: number;
   maxConcurrency: number;
   maxRequestRetries: number;
   mode: 'precision' | 'balanced' | 'recall' | 'keep';
@@ -408,40 +327,15 @@ interface MarkdowneeInputType {
   ([ACL 2021 paper](https://aclanthology.org/2021.acl-demo.15/)).
 - [Trafilatura Core](https://www.trafilaturacore.com/) — the `trafilaturacore`
   engine Markdownee ships: an open-source pure-TypeScript port of
-  Trafilatura. Its extraction core is a direct port of Python Trafilatura,
+  Trafilatura. Its extraction core ports original Python
+  [Trafilatura](https://github.com/adbar/trafilatura),
   with
   [go-trafilatura](https://github.com/markusmobius/go-trafilatura) used only as
   a DOM translation aid.
 - [Crawlee](https://crawlee.dev/) by Apify — the crawling layer (Playwright +
   Cheerio, session pools, proxy rotation).
 
-## Contributing
-
-Bug reports and feature requests are welcome at the
-[issue tracker](https://github.com/markdownee/markdownee/issues);
-[pull requests](https://github.com/markdownee/markdownee/pulls) are welcome
-too. The sections below are for working on the monorepo itself; end users do not
-need any of this — see [Quick start](#quick-start) instead.
-
-### Local prerequisites
-
-- **Apify CLI ≥ 1.4** (older versions reject the modern `actor.json` format
-  with "Actor is of an unknown format").
-- **Node 22.22.2+ on the 22 line, 24.15.0+ on the 24 line, or 26+**, **pnpm 10+**.
-
-### Workspace commands
-
-```bash
-pnpm -w turbo run build --filter='./solutions/markdownee/engine/**'
-pnpm -w turbo run test --filter='./solutions/markdownee/engine/**'
-pnpm -w run lint  # tools-source root-owned Biome check
-apify run         # run the Actor locally (packages/apify-actor/)
-```
-
-### Architecture
-
-See [Packages](#packages) for the component map and [How it works](#how-it-works)
-for the data flow.
+Report problems through the [issue tracker](https://github.com/markdownee/markdownee/issues).
 
 ## License
 

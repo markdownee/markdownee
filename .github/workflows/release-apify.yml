@@ -31,7 +31,7 @@ jobs:
           REF: ${{ github.ref }}
         run: |
           set -euo pipefail
-          [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-(alpha|beta|rc)\.[0-9]+)?$ ]] || exit 1
+          [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || exit 1
           [ "$GITHUB_REPOSITORY" = "markdownee/markdownee" ]
           [ "$REF" = "refs/tags/$TAG" ]
           [ "$WORKFLOW_REF" = "$GITHUB_REPOSITORY/.github/workflows/release-apify.yml@refs/tags/$TAG" ]
@@ -39,6 +39,8 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
+      - name: Require the synchronized stable release family
+        run: node scripts/check-engine-release-family.mjs markdownee --tag "$TAG"
       - name: Verify source and production configuration
         run: |
           set -euo pipefail
@@ -74,10 +76,13 @@ jobs:
         run: |
           set -euo pipefail
           expected="https://github.com/markdownee/markdownee.git#$TAG:packages/apify-actor"
-          version="$(apify actors info markdownee/crawler --json | jq -er --arg url "$expected" \
-            '[.versions[] | select(.sourceType == "GIT_REPO" and .gitRepoUrl == $url)] | if length == 1 then .[0].versionNumber else error("Provision exactly one tagged GIT_REPO production version") end')"
+          actor_version="$(node -p "require('./packages/apify-actor/.actor/actor.json').version")"
+          version="$(apify actors info markdownee/crawler --json | jq -er --arg url "$expected" --arg version "$actor_version" \
+            '[.versions[] | select(.sourceType == "GIT_REPO" and .gitRepoUrl == $url and .versionNumber == $version)] | if length == 1 then .[0].versionNumber else error("Provision exactly one matching tagged GIT_REPO production version") end')"
           apify builds create markdownee/crawler --version "$version" --tag latest --wait --json > "$RUNNER_TEMP/actor-build.json"
-          jq -e --arg url "$expected" '.status == "SUCCEEDED" and .actVersion.sourceType == "GIT_REPO" and .actVersion.gitRepoUrl == $url' "$RUNNER_TEMP/actor-build.json"
+          # Apify's buildNumber uses its own counter; bind the source version separately.
+          jq -e --arg url "$expected" --arg version "$actor_version" \
+            '.status == "SUCCEEDED" and .actVersion.sourceType == "GIT_REPO" and .actVersion.gitRepoUrl == $url and .actVersion.versionNumber == $version' "$RUNNER_TEMP/actor-build.json"
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: production-build-evidence

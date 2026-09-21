@@ -380,7 +380,7 @@ async function executeRun(
     const stats = await runCrawler(crawler, buildRequests(cfg.urls, cfg.keepUrlFragment));
 
     const max = input.maxResultsPerCrawl;
-    const items = max > 0 ? mem.results.slice(0, max) : mem.results;
+    const items = max === undefined ? mem.results : mem.results.slice(0, max);
 
     return {
       dataset: new ResultDataset(items),

@@ -56,7 +56,7 @@ jobs:
           REF: ${{ github.ref }}
         run: |
           set -euo pipefail
-          [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-(alpha|beta|rc)\.[0-9]+)?$ ]] || exit 1
+          [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || exit 1
           expected="${GITHUB_REPOSITORY}/.github/workflows/release-npm.yml@refs/tags/${TAG}"
           if [ "$WORKFLOW_REF" != "$expected" ] || [ "$REF" != "refs/tags/${TAG}" ]; then
             echo "workflow_ref=${WORKFLOW_REF}" >&2
@@ -69,6 +69,8 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
+      - name: Require the synchronized stable release family
+        run: node scripts/check-engine-release-family.mjs markdownee --tag "$TAG"
 
       - name: Require the tag to resolve to the checked-out commit
         shell: bash
@@ -206,17 +208,11 @@ jobs:
           else
             unset NODE_AUTH_TOKEN
           fi
-          dist_tag=latest
-          case "$TAG" in
-            *-alpha.*) dist_tag=alpha ;;
-            *-beta.*) dist_tag=beta ;;
-            *-rc.*) dist_tag=rc ;;
-          esac
           # Publish from the staging directory, which has no package.json, so no manifest lifecycle
           # script can run. `prepublishOnly` in the release manifest stays a backstop against an
           # ordinary directory publish; it is NOT protection against publishing a crafted tarball.
           cd "$RUNNER_TEMP/npm-stage"
-          npm publish "$TARBALL" --provenance --access public --tag "$dist_tag"
+          npm publish "$TARBALL" --provenance --access public --tag latest
 
       - name: Require the registry to hold the exact bytes that were inspected
         shell: bash
@@ -225,9 +221,11 @@ jobs:
         run: |
           set -euo pipefail
           remote=""
-          for _ in 1 2 3 4 5; do
-            remote="$(npm view "${PACKAGE_NAME}@${VERSION}" dist.integrity 2>/dev/null || true)"
+          for attempt in {1..30}; do
+            remote="$(npm view "${PACKAGE_NAME}@${VERSION}" dist.integrity \
+              --registry=https://registry.npmjs.org/ --prefer-online 2>/dev/null || true)"
             [ -n "$remote" ] && break
+            echo "registry metadata is not visible yet (attempt ${attempt}/30)"
             sleep 10
           done
           expected="$(cat "$RUNNER_TEMP/npm-stage/tarball.integrity")"

@@ -47,8 +47,8 @@ export function validateSaveTokens<T extends string>(
 
 interface CrawlConfig {
   urls: string[];
-  maxRequestsPerCrawl: number;
-  maxCrawlDepth: number;
+  maxRequestsPerCrawl: number | undefined;
+  maxCrawlDepth: number | undefined;
   headless: boolean;
   mode: MarkdowneeInputType['mode'];
   imageHandling: MarkdowneeInputType['imageHandling'];
@@ -85,10 +85,10 @@ interface CrawlConfig {
   headers: Record<string, string>;
 
   // Concurrency & retries.
-  initialConcurrency: number;
+  initialConcurrency: number | undefined;
   maxConcurrency: number;
   maxRetries: number;
-  maxResults: number;
+  maxResults: number | undefined;
 
   // Selector waits.
   waitForDynamicContentSecs: number;
@@ -245,7 +245,7 @@ export function toCrawlerOptions(cfg: CrawlConfig, rt: CrawlerRuntime): Markdown
     blockMediaExplicit: rt.blockMediaExplicit,
     navigationTimeoutSecs: cfg.navigationTimeoutSecs,
     waitUntil: cfg.waitUntil,
-    maxResults: cfg.maxResults > 0 ? cfg.maxResults : undefined,
+    maxResults: cfg.maxResults,
     selector: cfg.selector || undefined,
     maxCrawlDepth: cfg.maxCrawlDepth,
     globs: cfg.globs,
