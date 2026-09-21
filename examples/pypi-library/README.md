@@ -24,7 +24,7 @@ product engine and provides no product CLI.
 Install the matching native release when it is available:
 
 ```bash
-pip install markdownee==0.8.1
+pip install markdownee==0.8.2
 python main.py
 python async_example.py
 ```
@@ -43,7 +43,7 @@ first build the matching Trafilatura Core wheel with its Python example runner,
 then pass that wheel to this runner:
 
 ```bash
-./run.sh /path/to/trafilaturacore-0.8.1-py3-none-any.whl
+./run.sh /path/to/trafilaturacore-0.8.2-py3-none-any.whl
 ```
 
 The build requires `uv`, Python 3.12 or newer, and this checkout. Omitting the
