@@ -75,6 +75,7 @@ jobs:
           APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
         run: |
           set -euo pipefail
+          apify login --token "$APIFY_TOKEN"
           expected="https://github.com/markdownee/markdownee.git#$TAG:packages/apify-actor"
           actor_version="$(node -p "require('./packages/apify-actor/.actor/actor.json').version")"
           version="$(apify actors info markdownee/crawler --json | jq -er --arg url "$expected" --arg version "$actor_version" \

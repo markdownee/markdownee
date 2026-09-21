@@ -1,3 +1,10 @@
 {
-  "version": "0.8.2"
+  "releaseVersion": "0.8.3",
+  "versions": {
+    "markdownee": "0.8.3",
+    "trafilaturacore": "0.8.2"
+  },
+  "dependencies": {
+    "markdowneeTrafilaturacore": "0.8.2"
+  }
 }

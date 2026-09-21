@@ -24,7 +24,7 @@ product engine and provides no product CLI.
 Install the matching native release when it is available:
 
 ```bash
-pip install markdownee==0.8.2
+pip install markdownee==0.8.3
 python main.py
 python async_example.py
 ```

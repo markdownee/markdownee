@@ -2,7 +2,7 @@
   <tbody>
     <tr>
       <td>
-        <img width="220" src="https://www.markdownee.com/media/logo.svg" alt="Markdownee" />
+        <img width="220" src="https://www.markdownee.com/media/cover-mini.svg" alt="Markdownee" />
         <br />
         <a href="https://www.npmjs.com/package/@markdownee/markdownee"><img src="https://img.shields.io/npm/v/%40markdownee%2Fmarkdownee.svg" alt="npm version" /></a>
         <br />
@@ -36,32 +36,42 @@ Markdownee is a web scraper that crawls websites and saves their content as
 Choose which links to follow, set page and depth limits, and select how much page
 content to keep. Control tables, links, images, and user comments separately.
 
-Boilerplate removal is powered by [Trafilatura Core](https://www.trafilaturacore.com/), **our open-source fork of [Trafilatura](https://www.markdownee.com/trafilatura/)**. The **Core** in its name means it is reduced to one task: main-content extraction and boilerplate removal. Other packages handle output conversion, including Markdown. Trafilatura Core is ported from the original Python [Trafilatura](https://github.com/adbar/trafilatura), with [go-trafilatura](https://github.com/markusmobius/go-trafilatura) as a DOM translation aid. [Crawlee](https://crawlee.dev/) handles crawling and uses [Playwright](https://playwright.dev/) for browser rendering.
+Boilerplate removal is powered by [Trafilatura Core](https://www.trafilaturacore.com/),
+**our open-source fork of [Trafilatura](https://www.markdownee.com/trafilatura/)**.
+The **Core** in its name means it is reduced to one task: main-content extraction and
+boilerplate removal. Other packages handle output conversion, including Markdown.
+Trafilatura Core is ported from the original Python
+[Trafilatura](https://github.com/adbar/trafilatura), with
+[go-trafilatura](https://github.com/markusmobius/go-trafilatura) as a DOM translation
+aid. [Crawlee](https://crawlee.dev/) handles crawling and uses
+[Playwright](https://playwright.dev/) for browser rendering.
 
-- Two language versions — **TypeScript** and **Python**: use this Actor, the
-  [npm CLI](https://www.markdownee.com/help/npm/) and
-  [npm library](https://www.markdownee.com/help/npm-lib/), or the
-  [Python library](https://www.markdownee.com/help/pypi/). Source is on
-  [GitHub](https://github.com/markdownee/markdownee).
-- **Optional image downloading:** keep local images with stored content.
+## What Markdownee does
 
-## Configure a run in Console
+- **Controls crawl scope:** follow selected links, include or exclude URL patterns,
+  read sitemaps, and enforce page and depth limits.
+- **Fetches browser-rendered or server HTML:** use adaptive Playwright, an explicit
+  browser crawler, or HTTP-only Cheerio according to the target.
+- **Selects useful content:** choose precision, balanced, recall, or keep mode and
+  configure waits, scrolling, consent handling, and deduplication.
+- **Produces practical formats:** save Markdown, readable or minified HTML, plain text,
+  and the captured original to Apify Dataset, Key-value store, or both.
+- **Handles content details independently:** include or exclude tables, links, images,
+  and detected user-comment sections; images can also be downloaded.
 
-Add starting URLs and choose **Save** destinations. Each token combines a format
-with `dataset` or `kvs`; choose both to store the same format in both places.
-Use a link selector, include/exclude patterns, sitemaps, and page/depth limits to
-define the crawl. Then select **Start** and inspect its records and content.
+The same project is available as an
+[npm CLI](https://www.markdownee.com/help/npm/),
+[npm library](https://www.markdownee.com/help/npm-lib/), and
+[Python library](https://www.markdownee.com/help/pypi/).
 
-Dataset downloads support JSON, CSV, and Excel. KVS content can be downloaded
-separately or fetched through the Apify API.
+## How to run a crawl
 
-## Input recipes
+1. Add one or more starting URLs in the Actor's **Input** tab.
+2. Choose the output formats and storage destinations under **Save**. Add a link
+   selector and limits when the Actor should follow links.
+3. Select **Start**, then inspect the run's Dataset and Key-value store.
 
-Starting URLs are required. The
-[Input tab](https://apify.com/markdownee/crawler/input-schema?fpr=glueo) lists the
-complete contract and defaults.
-
-Collect a bounded set of Wikipedia articles with Markdown storage:
+This example collects a bounded set of Wikipedia pages and stores Markdown files:
 
 ```json
 {
@@ -74,211 +84,54 @@ Collect a bounded set of Wikipedia articles with Markdown storage:
 }
 ```
 
-Request several formats for one starting page:
+See the [Input tab](https://apify.com/markdownee/crawler/input-schema?fpr=glueo) for
+all settings, types, defaults, and crawler-specific options.
 
-```json
-{
-  "startUrls": [{ "url": "https://en.wikipedia.org/wiki/Web_scraping" }],
-  "maxRequestsPerCrawl": 1,
-  "save": ["markdown-kvs", "minified-html-dataset", "original-kvs"]
-}
-```
+## Results and storage
 
-Store readable and compact HTML independently:
+Each processed URL produces a record with its status, available page metadata, crawl
+details, requested formats, errors, and storage references. When Markdown discovery
+is enabled, `markdownSource` identifies how the representation was found and whether
+saved Markdown retained the served Markdown representation.
 
-```json
-{
-  "startUrls": [{ "url": "https://en.wikipedia.org/wiki/Web_scraping" }],
-  "save": ["html-kvs", "minified-html-dataset", "markdown-kvs"]
-}
-```
+Dataset destinations keep content inline for combined JSON, CSV, or Excel exports.
+Key-value store destinations save each format as a separate file, which avoids adding
+large page bodies to Dataset records. You can select either or both per format.
 
-`outputLayout` defaults to `minimal` for body text and HTML fragments.
-`standard` adds ordinary metadata and complete HTML documents; `enhanced`
-includes additional allowlisted metadata and crawl information. Layout neither
-adds destinations nor modifies the captured original.
+The [Output tab](https://apify.com/markdownee/crawler/output-schema?fpr=glueo)
+documents the record shape. Use the
+[API tab](https://apify.com/markdownee/crawler/api?fpr=glueo) to start runs and read
+results from code. Apify schedules and integrations can connect recurring runs to
+the rest of your workflow.
 
-Look for Markdown published by a documentation site:
+## Pricing
 
-```json
-{
-  "startUrls": [{ "url": "https://developers.cloudflare.com/fundamentals/reference/markdown-for-agents/" }],
-  "globs": [{ "glob": "https://developers.cloudflare.com/fundamentals/**" }],
-  "markdownDiscovery": "alternate",
-  "save": ["markdown-kvs"]
-}
-```
+This Actor uses Apify's pay-per-use model. Compute time, storage, proxy traffic,
+browser rendering, page size, concurrency, waits, and crawl limits can all affect the
+final cost. Start with a representative, bounded run before scaling up. Apify offers
+[$5 of free usage monthly](https://apify.com/pricing?fpr=glueo); check its pricing
+page for current rates.
 
-`markdownDiscovery` affects the source of all output formats. `off` leaves
-HTML fetching unchanged. `alternate` follows advertised same-origin links;
-`negotiate` also requests Markdown through Accept; `probe` also tries a .md
-sibling. Up to three alternates, one refetch, and one sibling may be attempted;
-robots.txt can add an origin-level request. Crawler-path capabilities and
-per-origin budgets restrict attempts. Rejected representations fall back to HTML.
+## Troubleshooting and support
 
-Configure proxies and a persistent session pool:
+### Expected content is missing
 
-```json
-{
-  "startUrls": [{ "url": "https://en.wikipedia.org/wiki/Web_scraping" }],
-  "proxyConfiguration": {
-    "useApifyProxy": true,
-    "apifyProxyGroups": ["RESIDENTIAL"]
-  },
-  "proxyRotation": "recommended",
-  "sessionPoolName": "wikipedia",
-  "waitUntil": "networkidle"
-}
-```
+Compare the precision, balanced, and recall extraction modes. For content added by
+JavaScript, use a browser crawler and review selector waits, dynamic-content waits,
+and scroll limits. Saving the original helps distinguish fetching problems from
+extraction choices.
 
-These controls affect requests and session reuse; they do not assure access to
-a site. URL filtering also needs a `selector` to enable link following, unless
-the full URL list or sitemap supplies the crawl frontier.
+### Page furniture remains in the output
 
-## Choose fetching and extraction settings
+Try precision mode, then adjust table, link, image, and user-comment handling. A
+targeted exclusion selector can remove a stable site-specific element.
 
-- **Crawler type:** adaptive Playwright renders by default. A positive
-  `renderingTypeDetectionRatio` enables sampling to decide when HTTP can be used.
-  Explicit Firefox, Chromium, and HTTP-only Cheerio are also available.
-- **Extraction mode:** `precision` favors less noise, `recall` retains more
-  borderline content, `balanced` is the default, and `keep` cleans the document
-  without main-content selection.
-- **Content handling:** images accept `exclude`, `alt-text`, `resolved-url`,
-  or `save`. Links, tables, and detected user-comment sections accept `include`
-  or `exclude`.
-- **Waits and consent:** selectors, dynamic-content waits, scrolling, cookies,
-  and headers help control capture. Enabled consent handling attempts recovery
-  and removes residual consent containers before extraction.
-- **Deduplication:** `minimal` uses Crawlee URL deduplication; `standard` also
-  checks canonical URLs; `aggressive` also checks extracted-content hashes.
+### The crawl stops early or pages fail
 
-`startUrls`, `globs`, and `exclude` use arrays of objects containing `url` or
-`glob`, respectively. `save` uses strings such as `markdown-kvs` or
-`txt-dataset`. Supported formats are `txt`, `markdown`, `html`,
-`minified-html`, and `original`.
+Check page and depth limits, URL filters, retries, proxy settings, and failed records.
+Following links requires a selector such as `a[href]`; globs alone do not discover
+links. Target sites can still throttle or block requests.
 
-## Interpret results
-
-Successful pages produce `success` records. Requests that exhaust retries
-produce `failed` records; skips are recorded when `storeSkippedUrls` is enabled.
-
-| Field                                     | Meaning                                                                                |
-| ----------------------------------------- | -------------------------------------------------------------------------------------- |
-| `url`                                     | Requested page address                                                                 |
-| `status`                                  | `success`, `failed`, or `skipped`                                                      |
-| `metadata`                                | Available title, author, date, description, site, language, and extended fields        |
-| `crawl`                                   | Available final `loadedUrl`, `scrapedAt`, `httpStatusCode`, `depth`, and `referrerUrl` |
-| `original`                                | Crawler-captured HTML's hash and byte count, with stored content when requested        |
-| `txt`, `markdown`, `html`, `minifiedHtml` | Selected format nodes containing hashes, byte counts, and content or KVS references    |
-| `markdownSource`                          | Discovery mechanism, source URL, and whether served Markdown supplied the output body  |
-| `errors`, `retryCount`, `crawledTime`     | Failed-request details                                                                 |
-| `skipReason`                              | `robotsTxt`, `limit`, `enqueueLimit`, `filters`, `redirect`, or `depth`                |
-
-This illustrative record uses sample metadata, hashes, and byte counts:
-
-```json
-{
-  "url": "https://en.wikipedia.org/wiki/Web_scraping",
-  "status": "success",
-  "metadata": {
-    "title": "Web scraping",
-    "siteName": "Wikipedia",
-    "languageCode": "en"
-  },
-  "crawl": {
-    "loadedUrl": "https://en.wikipedia.org/wiki/Web_scraping",
-    "scrapedAt": "2026-05-31T10:00:00.000Z",
-    "httpStatusCode": 200,
-    "depth": 1,
-    "referrerUrl": "https://en.wikipedia.org/"
-  },
-  "original": {
-    "hash": "f8e6bd335e04d03e1be6798c2c72349c",
-    "bytes": 89898
-  },
-  "markdown": {
-    "hash": "43f204bfbee5dbe6862cb38620f257b5",
-    "bytes": 5234,
-    "key": "markdown-c485356090a92c6a45e8c1155c14d8ee.md",
-    "url": "https://api.apify.com/v2/key-value-stores/<storeId>/records/<key>"
-  }
-}
-```
-
-`markdownSource` appears when enabled discovery supplied an origin-published
-representation. Its mechanism is `response`, `alternate`, `negotiated`, or
-`sibling`. `verbatim` is true for a served Markdown body after source front-matter
-handling and the selected layout; it is false for a cleaned HTML round trip or
-when no Markdown output was saved. These records derive `original` from the
-served representation.
-
-Ordinary original HTML is a capture before extraction. It can already reflect
-browser rendering, serialization, and consent handling, and is not a complete
-web archive.
-
-## Select storage destinations
-
-**KVS routes**, the default, put each format in a separate file keyed by
-`{format}-{md5(url)}.{ext}`. The record includes its key and public URL when
-available. **Dataset routes** place content inline for a combined export.
-Large inline HTML increases record size and memory use; KVS is an alternative.
-
-Choose one or both destinations for each format. Markdown is convenient for
-text-based document structure, TXT for text-only consumers, readable HTML for
-inspection, and Minified HTML for compact markup storage. Keep original HTML
-when the crawler capture is useful for later diagnosis or reprocessing.
-
-## Estimate run costs
-
-Apify charges depend on compute, storage, proxy traffic, and the selected plan.
-Browser work, page size, concurrency, waits, and crawl limits affect resource
-use. Start with a representative sample to estimate a larger collection.
-Apify offers [$5 of free usage monthly](https://apify.com/pricing?fpr=glueo);
-consult that page for current rates.
-
-## Integrations and recurring collection
-
-The [API tab](https://apify.com/markdownee/crawler/api?fpr=glueo) provides
-JavaScript/Python client examples, OpenAPI information, and MCP setup.
-Use Apify scheduling for recurring runs and its integrations for destinations
-such as Make, Zapier, n8n, Google Drive, or Slack.
-
-Your application can use the returned content for summarization, translation,
-classification, search, or training-data preparation. Frameworks such as
-LangChain and LlamaIndex, and stores such as Pinecone, Qdrant, Weaviate, or Chroma,
-consume the records through your ingestion code.
-
-## FAQ
-
-### Is it legal to scrape website content?
-
-Scraping publicly available, non-personal data is generally legal in most
-jurisdictions. Markdownee can honor each site's `robots.txt` (enable **Respect
-robots.txt**), and you remain responsible for complying with each site's Terms of
-Service and for how you use extracted content — especially copyrighted material you
-intend to republish.
-
-### Why is content missing or mixed with page furniture?
-
-Compare `precision`, `balanced`, and `recall` on the affected pages. If content
-appears after JavaScript execution, use a browser crawler and review selector
-waits, dynamic-content waits, and scroll limits. Examine the captured original
-to distinguish fetching problems from extraction decisions.
-
-### How do I configure a larger crawl?
-
-Supply `selector`, for example `a[href]`, and bound matching links with globs,
-depth, and request limits. Enable sitemaps when appropriate. Review proxy,
-session-pool, and rotation settings for the target site; failures remain
-possible and are recorded.
-
-### How do I start a run from code?
-
-Use the [API tab](https://apify.com/markdownee/crawler/api?fpr=glueo) for client
-examples or MCP configuration. The Console also supports scheduling and run
-monitoring.
-
-### Where can I report a problem?
-
-Open the Actor's **Issues** tab with the settings and outcome needed to
-understand the problem.
+You are responsible for following target-site terms and applicable rules and for how
+you use the collected content. To report a reproducible Actor problem, open the
+Actor's **Issues** tab and include the relevant settings and outcome.
