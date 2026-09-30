@@ -35,10 +35,10 @@
           <li><a href="https://www.markdownee.com/help/apify/">Actor guide</a></li>
         </ul>
         <h3>Social</h3>
-        <p>
-          <a href="https://github.com/markdownee/markdownee">Star us on GitHub</a><br />
-          <a href="https://github.com/markdownee">Follow us on GitHub</a>
-        </p>
+        <ul>
+          <li><a href="https://github.com/markdownee/markdownee">Star us on GitHub</a></li>
+          <li><a href="https://github.com/markdownee">Follow us on GitHub</a></li>
+        </ul>
       </td>
     </tr>
   </tbody>
@@ -65,6 +65,12 @@ for your settings. Use `fetch` for a single page or `crawl` to collect records w
 limits and link filters. Library calls return data to your application; the
 [library guide](https://www.markdownee.com/help/npm-library/) explains their options
 and storage behavior. Browser installation is needed only for browser crawling.
+
+Fetch one page into memory or a file, or collect a crawl for later export. The CLI
+can export stored results or remove its selected storage. Start with a bounded
+crawl, inspect the first result, and then expand the collection. Python uses
+Crawlee Python and Python Trafilatura Core, with its capability differences
+documented separately in [Python library help](https://www.markdownee.com/help/pypi/).
 
 ## Contents
 

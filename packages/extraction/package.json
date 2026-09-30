@@ -1,6 +1,6 @@
 {
   "name": "@markdownee/extraction",
-  "version": "0.8.4",
+  "version": "0.8.5",
   "private": true,
   "description": "Pure TypeScript content-extraction package backed by the Trafilatura Core engine.",
   "type": "module",
@@ -19,7 +19,7 @@
   "dependencies": {
     "@markdownee/conversion": "workspace:*",
     "@markdownee/schema": "workspace:*",
-    "@markdownee/trafilaturacore": "0.8.4"
+    "@markdownee/trafilaturacore": "0.8.5"
   },
   "devDependencies": {
     "@types/node": "^26.5.1",

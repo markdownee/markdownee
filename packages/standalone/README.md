@@ -33,10 +33,10 @@
           <li><a href="https://www.markdownee.com/help/npm-library/">Library help</a></li>
         </ul>
         <h3>Social</h3>
-        <p>
-          <a href="https://github.com/markdownee/markdownee">Star us on GitHub</a><br />
-          <a href="https://github.com/markdownee">Follow us on GitHub</a>
-        </p>
+        <ul>
+          <li><a href="https://github.com/markdownee/markdownee">Star us on GitHub</a></li>
+          <li><a href="https://github.com/markdownee">Follow us on GitHub</a></li>
+        </ul>
       </td>
     </tr>
   </tbody>
@@ -60,18 +60,20 @@ Choose which links to follow, set page and depth limits, and select how much pag
 
 This package provides the TypeScript library and CLI.
 
+Use `fetch` to return one page directly without opening a dataset or key-value
+store. Use `crawl` to collect records and `export` to write stored results to an
+output directory. `purge` removes the selected local storage. Inspect the first
+result before expanding a collection; the
+[CLI guide](https://www.markdownee.com/help/npm-cli/) explains each command's input
+and output.
+
 ## Contents
 
 - [Install](#install)
-
 - [Usage: library](#usage-library)
-
 - [Usage: CLI](#usage-cli)
-
 - [Why Markdownee](#why-markdownee)
-
 - [Support](#support)
-
 - [License](#license)
 
 ## Install

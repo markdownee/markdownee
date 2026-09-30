@@ -81,9 +81,11 @@ jobs:
           version="$(apify actors info markdownee/crawler --json | jq -er --arg url "$expected" --arg version "$actor_version" \
             '[.versions[] | select(.sourceType == "GIT_REPO" and .gitRepoUrl == $url and .versionNumber == $version)] | if length == 1 then .[0].versionNumber else error("Provision exactly one matching tagged GIT_REPO production version") end')"
           apify builds create markdownee/crawler --version "$version" --tag latest --wait --json > "$RUNNER_TEMP/actor-build.json"
-          # The source binding was verified above; this build response does not include actVersion.
-          jq -e '.status == "SUCCEEDED"' "$RUNNER_TEMP/actor-build.json"
+          # Apify CLI 1.7 wraps the terminal build under `build`; the API object is not top-level.
+          jq -e '.ok == true and .operation == "builds.create" and .waited == true and
+            .exitCode == 0 and .build.status == "SUCCEEDED"' "$RUNNER_TEMP/actor-build.json"
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
         with:
           name: production-build-evidence
           if-no-files-found: error

@@ -16,10 +16,10 @@
           <li><a href="https://www.markdownee.com/help/pypi/">Python library help</a></li>
         </ul>
         <h3>Social</h3>
-        <p>
-          <a href="https://github.com/markdownee/markdownee">Star us on GitHub</a><br />
-          <a href="https://github.com/markdownee">Follow us on GitHub</a>
-        </p>
+        <ul>
+          <li><a href="https://github.com/markdownee/markdownee">Star us on GitHub</a></li>
+          <li><a href="https://github.com/markdownee">Follow us on GitHub</a></li>
+        </ul>
       </td>
     </tr>
   </tbody>

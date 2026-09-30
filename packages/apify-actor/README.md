@@ -29,10 +29,10 @@
           <li><a href="https://www.markdownee.com/help/apify/">Actor guide</a></li>
         </ul>
         <h3>Social</h3>
-        <p>
-          <a href="https://github.com/markdownee/markdownee">Star us on GitHub</a><br />
-          <a href="https://github.com/markdownee">Follow us on GitHub</a>
-        </p>
+        <ul>
+          <li><a href="https://github.com/markdownee/markdownee">Star us on GitHub</a></li>
+          <li><a href="https://github.com/markdownee">Follow us on GitHub</a></li>
+        </ul>
       </td>
     </tr>
   </tbody>
@@ -55,6 +55,11 @@ Choose which links to follow, set page and depth limits, and select how much pag
 - Save image files with the optional **image downloading** mode.
 
 This Actor saves the selected formats in Apify storage.
+
+Select a Dataset route when content should appear in each result record, or a
+Key-value store route when you want downloadable files. The Actor can retain both
+representations. Start with a bounded run and inspect its outputs before increasing
+the crawl limits.
 
 ## What Markdownee does
 
