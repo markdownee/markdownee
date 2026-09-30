@@ -67,15 +67,6 @@ result before expanding a collection; the
 [CLI guide](https://www.markdownee.com/help/npm-cli/) explains each command's input
 and output.
 
-## Contents
-
-- [Install](#install)
-- [Usage: library](#usage-library)
-- [Usage: CLI](#usage-cli)
-- [Why Markdownee](#why-markdownee)
-- [Support](#support)
-- [License](#license)
-
 ## Install
 
 Use Node.js 22.22.2+ on 22.x, 24.15.0+ on 24.x, or 26+. In a new project directory:

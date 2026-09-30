@@ -4,22 +4,16 @@
   <tbody>
     <tr>
       <td>
-        <img align="right" width="220" src="https://www.markdownee.com/media/logo.svg" alt="Markdownee" />
+        <img class="align-right" align="right" width="220" src="https://www.markdownee.com/media/logo.svg" alt="Markdownee" />
         <a href="https://pypi.org/project/markdownee/"><img src="https://img.shields.io/pypi/v/markdownee.svg" alt="PyPI version" /></a>
         <a href="https://pypi.org/project/markdownee/"><img src="https://img.shields.io/pypi/dm/markdownee.svg" alt="PyPI downloads" /></a>
         <a href="https://github.com/markdownee/markdownee/blob/main/LICENSE"><img src="https://img.shields.io/pypi/l/markdownee.svg" alt="license" /></a>
         <h3>Also available as:</h3>
         <strong><a href="https://www.markdownee.com/">Online playground</a></strong> | <strong><a href="https://apify.com/markdownee/crawler?fpr=glueo">Apify Actor</a></strong> | <strong><a href="https://www.npmjs.com/package/@markdownee/markdownee">npm package CLI &amp; lib</a></strong> | <strong><a href="https://github.com/markdownee/markdownee">Source code on GitHub</a></strong>
         <h3>Docs</h3>
-        <ul>
-          <li><a href="https://www.markdownee.com/help/getting-started/">Getting started</a></li>
-          <li><a href="https://www.markdownee.com/help/pypi/">Python library help</a></li>
-        </ul>
+        <strong><a href="https://www.markdownee.com/help/getting-started/">Getting started</a></strong> | <strong><a href="https://www.markdownee.com/help/pypi/">Python library help</a></strong>
         <h3>Social</h3>
-        <ul>
-          <li><a href="https://github.com/markdownee/markdownee">Star us on GitHub</a></li>
-          <li><a href="https://github.com/markdownee">Follow us on GitHub</a></li>
-        </ul>
+        <strong><a href="https://github.com/markdownee/markdownee">Star us on GitHub</a></strong> | <strong><a href="https://github.com/markdownee">Follow us on GitHub</a></strong>
       </td>
     </tr>
   </tbody>
@@ -42,14 +36,6 @@ Choose which links to follow, set page and depth limits, and select how much pag
 - Save image files with the optional **image downloading** mode.
 
 This package provides the native Python library, using Crawlee Python and Python Trafilatura Core. Python exposes library APIs only; see the [language differences](https://www.markdownee.com/help/pypi/) for its supported crawl controls.
-
-## Contents
-
-- [Install](#install)
-- [Extract a page](#extract-a-page)
-- [Why Markdownee](#why-markdownee)
-- [Support](#support)
-- [License](#license)
 
 ## Install
 
