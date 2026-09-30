@@ -19,7 +19,9 @@ OUTPUT_DIR = Path.cwd() / "output"
 
 def main() -> None:
     """Export one page, inspect its manifest, and request an in-memory result."""
-    url = sys.argv[1] if len(sys.argv) > 1 else "https://example.com"
+    url = (
+        sys.argv[1] if len(sys.argv) > 1 else "https://docs.python.org/3/tutorial/introduction.html"
+    )
     # Each crawl writes files and a manifest in its own run subdirectory.
     # Python selects formats directly; dataset/KVS save tokens are TypeScript-only.
     summary = markdownee.crawl(

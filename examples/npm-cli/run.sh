@@ -1,20 +1,22 @@
 #!/usr/bin/env bash
 # Demonstrates the full npm CLI surface for markdownee.
-# Requires: npm install -g markdownee (or npx markdownee)
+# Requires: npm install -g @markdownee/markdownee
+# Browser examples also need: npx playwright install chromium firefox
 # One --storage path fully identifies a run's storage (always the 'default'
 # buckets). When --storage is omitted, MARKDOWNEE_STORAGE_DIR controls
 # where data is persisted.
 set -euo pipefail
 
-URL1="https://example.com"
-URL2="https://www.iana.org/domains/reserved"
+URL1="https://en.wikipedia.org/wiki/Web_scraping"
+URL2="https://en.wikipedia.org/wiki/Web_crawler"
+SITEMAP_URL="https://www.markdownee.com/help/getting-started/"
 
-# Help for every subcommand (truncated — drop `| head -5` to see all flags)
-markdownee --help | head -5
-markdownee crawl --help | head -5
-markdownee fetch --help | head -5
-markdownee export --help | head -5
-markdownee purge --help | head -5
+# Help for every subcommand (first five lines; remove sed to see all flags)
+markdownee --help | sed -n '1,5p'
+markdownee crawl --help | sed -n '1,5p'
+markdownee fetch --help | sed -n '1,5p'
+markdownee export --help | sed -n '1,5p'
+markdownee purge --help | sed -n '1,5p'
 
 # Multi-URL crawl into ./crawl-storage — markdown as a key-value-store blob
 # AND plain text inline in the dataset record. --purge wipes the storage
@@ -24,30 +26,29 @@ markdownee crawl "$URL1" "$URL2" --crawler-type cheerio \
   --storage ./crawl-storage --purge
 
 # Input file — reads URLs line by line; a different run gets its own --storage
-echo "$URL1" > /tmp/urls.txt
-echo "$URL2" >> /tmp/urls.txt
-markdownee crawl --start-urls-file /tmp/urls.txt --crawler-type cheerio \
+printf '%s\n' "$URL1" "$URL2" > ./urls.txt
+markdownee crawl --start-urls-file ./urls.txt --crawler-type cheerio \
   --storage ./file-run-storage --purge
 
-# Crawler engine selection — adaptive starts HTTP-only and falls back to a
-# headless browser per page when needed; firefox forces Playwright Firefox
+# Adaptive uses a browser by default; enabling rendering-type detection below
+# opts into its HTTP path. Firefox forces Playwright Firefox.
 # (cheerio appears above, chromium in the wait examples below)
 markdownee crawl "$URL1" --crawler-type adaptive \
   --max-requests-per-crawl 1 --storage ./engine-storage --purge
 markdownee crawl "$URL1" --crawler-type firefox \
-  --max-requests-per-crawl 1 --storage ./engine-storage
+  --max-requests-per-crawl 1 --storage ./engine-storage --purge
 
 # Rendering type detection ratio 0–1 (adaptive only) — the fraction of
 # requests double-checked with a browser to detect client-side rendering
 markdownee crawl "$URL1" --crawler-type adaptive --rendering-type-detection 0.2 \
-  --max-requests-per-crawl 1 --storage ./engine-storage
+  --max-requests-per-crawl 1 --storage ./engine-storage --purge
 
 # When --storage is omitted, MARKDOWNEE_STORAGE_DIR picks the storage dir
 MARKDOWNEE_STORAGE_DIR=./env-storage markdownee crawl "$URL1" \
   --crawler-type cheerio --max-requests-per-crawl 1 --purge
 
 # Wait for a CSS selector before extracting (fails on timeout) — browser
-# engines only; example.com always renders an <h1>
+# paths wait for it; Cheerio checks presence. These article pages contain an h1.
 markdownee crawl "$URL1" --crawler-type chromium --wait-for-selector "h1" \
   --max-requests-per-crawl 1 --storage ./wait-storage --purge
 
@@ -72,7 +73,7 @@ markdownee crawl "$URL1" --crawler-type chromium --no-block-media \
   --max-requests-per-crawl 1 --storage ./wait-storage
 
 # Discover and enqueue URLs from sitemap.xml at each start URL domain root
-markdownee crawl "$URL1" --crawler-type cheerio --use-sitemaps \
+markdownee crawl "$SITEMAP_URL" --crawler-type cheerio --use-sitemaps \
   --max-requests-per-crawl 2 --storage ./crawl-tuning-storage --purge
 
 # Start with a fixed concurrency and let Crawlee scale up to the cap
@@ -93,10 +94,10 @@ markdownee crawl "$URL1" --crawler-type cheerio --selector a \
 # Single page, no link-following — the default --save is markdown-stdout.
 # stdout carries the raw markdown only (diagnostics go to stderr), so it
 # pipes cleanly.
-markdownee fetch "$URL1" --crawler-type cheerio | head -20
+markdownee fetch "$URL1" --crawler-type cheerio | sed -n '1,20p'
 
 # Plain text to stdout
-markdownee fetch "$URL1" --crawler-type cheerio --save txt-stdout | head -10
+markdownee fetch "$URL1" --crawler-type cheerio --save txt-stdout | sed -n '1,10p'
 
 # Two files from one fetch — --output is a base prefix, each format appends
 # its own extension: page.md + page.html
@@ -107,8 +108,8 @@ ls page.md page.html
 # Mixed destinations — markdown to a file while the extracted HTML streams
 # to stdout
 markdownee fetch "$URL1" --crawler-type cheerio \
-  --save markdown-file --save html-stdout --output ./example.md | head -5
-ls example.md
+  --save markdown-file --save html-stdout --output ./article.md | sed -n '1,5p'
+ls article.md
 
 # Directory --output (trailing slash) — files get URL-slug names inside it
 markdownee fetch "$URL1" --crawler-type cheerio \

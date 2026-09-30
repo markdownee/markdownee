@@ -5,6 +5,7 @@ set -euo pipefail
 
 # Extract a page: text inline in the dataset record, raw HTML as a key-value-store blob.
 apify call markdownee/crawler-test --input '{
-  "startUrls": [{"url": "https://example.com"}],
+  "startUrls": [{"url": "https://en.wikipedia.org/wiki/Web_scraping"}],
+  "maxRequestsPerCrawl": 1,
   "save": ["txt-dataset", "original-kvs"]
 }'

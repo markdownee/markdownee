@@ -11,12 +11,13 @@ import { Configuration, KeyValueStore } from '@markdownee/markdownee/storage';
 // fetch(url, options) crawls exactly one URL (no link-following) and
 // returns the content directly — nothing is persisted. `formats` defaults to
 // ['markdown'], so this resolves to { markdown: '…' }.
-const single = await fetch('https://example.com', { crawlerType: CrawlerType.Cheerio });
+const sourceUrl = 'https://en.wikipedia.org/wiki/Web_scraping';
+const single = await fetch(sourceUrl, { crawlerType: CrawlerType.Cheerio });
 console.log('fetch default markdown length:', single.markdown?.length);
 
 // Request several formats at once: the returned map is keyed by the requested
 // formats. 'original' carries the raw page HTML (fetch has no includeHtml).
-const multi = await fetch('https://example.com', {
+const multi = await fetch(sourceUrl, {
   crawlerType: CrawlerType.Cheerio,
   formats: [SaveFormat.Markdown, SaveFormat.Original],
 });
@@ -36,7 +37,7 @@ const extractor = createCrawler({
   maxResultsPerCrawl: 10, // bounds the in-memory result set
 });
 
-const { dataset, statistics, failures } = await extractor.run(['https://example.com']);
+const { dataset, statistics, failures } = await extractor.run([sourceUrl]);
 
 // Partial page failures resolve with results. Invalid inputs and run errors throw.
 console.log(

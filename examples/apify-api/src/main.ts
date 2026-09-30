@@ -10,7 +10,8 @@ const client = new ApifyClient({ token: APIFY_TOKEN });
 
 // Start the test actor and wait for it to finish
 const run = await client.actor('markdownee/crawler-test').call({
-  startUrls: [{ url: 'https://example.com' }],
+  startUrls: [{ url: 'https://en.wikipedia.org/wiki/Web_scraping' }],
+  maxRequestsPerCrawl: 1,
   // `save` tokens bind each format to a destination (`-dataset` inlines it in the
   // record; `-kvs` stores a blob in the key-value store). Here txt goes to the
   // dataset, markdown to BOTH (inline + blob), and the raw HTML to the KVS only.
@@ -20,7 +21,7 @@ const run = await client.actor('markdownee/crawler-test').call({
   useSitemaps: true,
   storeSkippedUrls: true,
   waitForDynamicContentSecs: 5,
-  waitForSelector: 'article',
+  waitForSelector: 'h1',
   deduplication: 'minimal',
 });
 

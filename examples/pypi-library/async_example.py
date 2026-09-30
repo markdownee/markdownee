@@ -18,7 +18,10 @@ OUTPUT_DIR = Path.cwd() / "output-async"
 
 async def main() -> None:
     """Await a file export and a single-page result in the current event loop."""
-    urls = sys.argv[1:] or ["https://example.com", "https://www.iana.org/domains/reserved"]
+    urls = sys.argv[1:] or [
+        "https://docs.python.org/3/tutorial/introduction.html",
+        "https://docs.python.org/3/tutorial/controlflow.html",
+    ]
     summary = await markdownee.acrawl(
         urls,
         formats=["markdown", "original"],
