@@ -4,7 +4,7 @@
   <tbody>
     <tr>
       <td>
-        <img width="220" src="media/logo.svg" alt="Markdownee" />
+        <img width="220" src="media/logo-opaque.svg" alt="Markdownee" />
         <br />
         <a href="https://www.npmjs.com/package/@markdownee/markdownee"><img src="https://img.shields.io/npm/v/%40markdownee%2Fmarkdownee.svg" alt="npm version" /></a>
         <br />

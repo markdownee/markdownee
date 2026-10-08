@@ -4,7 +4,7 @@
   <tbody>
     <tr>
       <td>
-        <img class="align-right" align="right" width="220" src="https://www.markdownee.com/media/logo.svg" alt="Markdownee" />
+        <img class="align-right" align="right" width="220" src="https://www.markdownee.com/media/logo-opaque.svg" alt="Markdownee" />
         <a href="https://pypi.org/project/markdownee/"><img src="https://img.shields.io/pypi/v/markdownee.svg" alt="PyPI version" /></a>
         <a href="https://pypi.org/project/markdownee/"><img src="https://img.shields.io/pypi/dm/markdownee.svg" alt="PyPI downloads" /></a>
         <a href="https://github.com/markdownee/markdownee/blob/main/LICENSE"><img src="https://img.shields.io/pypi/l/markdownee.svg" alt="license" /></a>

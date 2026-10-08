@@ -11,6 +11,7 @@ import { MarkdowneeInput } from '@markdownee/schema';
 import type { ProxyConfigurationOptions } from 'apify';
 import { Actor, log } from 'apify';
 import { buildCrawlerOpts } from './config.js';
+import { failureDiagnostic } from './failure-diagnostic.js';
 import { createApifySink } from './sinks.js';
 
 export async function runActor(): Promise<void> {
@@ -120,7 +121,11 @@ export async function runActor(): Promise<void> {
       await pendingWrites.drain();
     }
   } catch (error) {
-    await Actor.exit({ exitCode: 1 });
+    log.error('Actor crawl failed', failureDiagnostic(error));
+    await Actor.exit({
+      exitCode: 1,
+      statusMessage: 'Actor crawl failed; see the run log for details.',
+    });
     throw error;
   }
   await Actor.exit();

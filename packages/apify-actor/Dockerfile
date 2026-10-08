@@ -4,7 +4,7 @@
 # published npm dependency here, so `pnpm install` fetches it: no sibling engine,
 # and no Rust toolchain anywhere in this image.
 
-FROM apify/actor-node-playwright:24 AS builder
+FROM apify/actor-node-playwright:24-1.63.0 AS builder
 
 USER root
 ENV NODE_ENV=development
@@ -50,11 +50,14 @@ RUN pnpm --filter @markdownee/schema build \
     && pnpm --filter @markdownee/apify --prod deploy --config.inject-workspace-packages=true /deploy \
     && node -e "const fs=require('fs');const p='/deploy/package.json';const pkg=JSON.parse(fs.readFileSync(p,'utf8'));pkg.type='module';fs.writeFileSync(p,JSON.stringify(pkg,null,2)+String.fromCharCode(10))"
 
-FROM apify/actor-node-playwright:24
+FROM apify/actor-node-playwright:24-1.63.0
 
 WORKDIR /usr/src/app
 
 COPY --chown=myuser:myuser --from=builder /deploy ./
+# Resolve Playwright exactly as the crawler does, rather than a leftover base-image package.
+# Fail the build if either supported browser cannot launch with the deployed dependency graph.
+RUN node --input-type=module -e "import { createRequire } from 'node:module'; const require = createRequire(import.meta.url); const pw = createRequire(require.resolve('@markdownee/crawler'))('playwright'); for (const browser of [pw.chromium, pw.firefox]) { const instance = await browser.launch({ headless: true, args: browser.name() === 'chromium' ? ['--no-sandbox'] : [] }); await instance.close(); console.log(browser.name() + ' launch verified'); }"
 # Third-party license attribution (Ghostery MPL-2.0) plus the Apache-2.0 LICENSE
 # text the NOTICE points at ("see LICENSE") and the THIRD-PARTY-NOTICES.txt the
 # NOTICE names for the redistributed closure; see repo-root NOTICE.
