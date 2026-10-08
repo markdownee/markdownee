@@ -1,6 +1,6 @@
 {
   "name": "@markdownee/conversion",
-  "version": "0.8.6",
+  "version": "0.8.9",
   "private": true,
   "description": "Converts secured semantic HTML into Markdownee's txt, Markdown, readable HTML, and minified HTML output formats.",
   "type": "module",
@@ -20,13 +20,13 @@
     "@joplin/turndown-plugin-gfm": "^1.0.68",
     "@markdownee/schema": "workspace:*",
     "@mixmark-io/domino": "^2.2.0",
-    "marked": "^18.0.12",
-    "prettier": "^3.9.6",
+    "marked": "^18.1.0",
+    "prettier": "^3.9.9",
     "turndown": "^7.2.4",
-    "yaml": "^2.9.0"
+    "yaml": "^2.9.1"
   },
   "devDependencies": {
-    "@types/node": "^26.5.1",
+    "@types/node": "^26.6.4",
     "@types/turndown": "^5.0.6",
     "typescript": "^7.0.2"
   }

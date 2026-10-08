@@ -9,6 +9,7 @@ const PACKAGES = {
 };
 const STABLE_VERSION = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/;
 
+/** @param {string} mode @param {{root?: string, tag?: string, product?: string}} options */
 export function checkReleaseFamily(mode, { root = ROOT, tag, product } = {}) {
   if (mode !== "tools" && !Object.hasOwn(PACKAGES, mode)) {
     throw new Error("expected tools, markdownee, or trafilaturacore");
@@ -16,7 +17,9 @@ export function checkReleaseFamily(mode, { root = ROOT, tag, product } = {}) {
   if (product !== undefined && (mode !== "tools" || !Object.hasOwn(PACKAGES, product))) {
     throw new Error("--product is valid only for tools with markdownee or trafilaturacore");
   }
+  /** @param {string} relative */
   const read = (relative) => readFileSync(path.join(root, relative), "utf8");
+  /** @param {string} relative */
   const json = (relative) => JSON.parse(read(relative));
   const declaration = json("scripts/engine-release-family.json");
   const { releaseVersion, versions, dependencies } = declaration;
@@ -53,6 +56,7 @@ export function checkReleaseFamily(mode, { root = ROOT, tag, product } = {}) {
     throw new Error("releaseVersion must equal the greatest product version");
   }
   const actorVersion = versions.markdownee.split(".").slice(0, 2).join(".");
+  /** @param {unknown} actual @param {unknown} expected @param {string} source */
   function equal(actual, expected, source) {
     if (actual !== expected) {
       throw new Error(`${source}: expected ${expected}, found ${String(actual)}`);
@@ -70,7 +74,7 @@ export function checkReleaseFamily(mode, { root = ROOT, tag, product } = {}) {
     const version = versions[product];
     const prefix = mode === "tools" ? `solutions/${product}/engine/` : "";
     const suffixes = mode === "tools" ? ["", ".release"] : [""];
-    for (const pkg of PACKAGES[product]) {
+    for (const pkg of PACKAGES[/** @type {keyof typeof PACKAGES} */ (product)]) {
       for (const suffix of suffixes) {
         const source = `${prefix}packages/${pkg}/package${suffix}.json`;
         const manifest = json(source);
@@ -124,7 +128,10 @@ export function checkReleaseFamily(mode, { root = ROOT, tag, product } = {}) {
   }
   if (mode === "tools") {
     const source = "solutions/common/shared/tools/glueosourcegenerator-data/config.json";
-    const config = json(source);
+    const config =
+      /** @type {{projectTemplates: {name: string, parameters: {name: string, value: unknown}[]}[]}} */ (
+        json(source)
+      );
     const template = config.projectTemplates.find((item) => item.name === "markdownee-engine");
     for (const [name, expected] of [
       ["packageVersion", versions.markdownee],
@@ -150,6 +157,7 @@ export function checkReleaseFamily(mode, { root = ROOT, tag, product } = {}) {
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try {
     const [mode, ...args] = process.argv.slice(2);
+    /** @type {Partial<Record<'--tag' | '--product', string>>} */
     const options = {};
     while (args.length > 0) {
       const flag = args.shift();
@@ -176,7 +184,9 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
       ),
     );
   } catch (error) {
-    console.error(`release family check failed: ${error.message}`);
+    console.error(
+      `release family check failed: ${error instanceof Error ? error.message : String(error)}`,
+    );
     process.exitCode = 1;
   }
 }
