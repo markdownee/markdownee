@@ -1,0 +1,36 @@
+name: Mirror to SourceForge
+on:
+  push:
+    branches: ['**']
+    tags: ['**']
+  workflow_dispatch:
+  schedule:
+    - cron: '17 */6 * * *'
+permissions:
+  contents: read
+concurrency:
+  group: sourceforge-mirror
+  cancel-in-progress: false
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Mirror branches and tags
+        env:
+          MIRROR_KEY: ${{ secrets.SOURCEFORGE_MIRROR_SSH_KEY }}
+          KNOWN_HOSTS: ${{ vars.SOURCEFORGE_KNOWN_HOSTS }}
+          SOURCE_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          test -n "$MIRROR_KEY"
+          test -n "$KNOWN_HOSTS"
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$MIRROR_KEY" > ~/.ssh/sourceforge
+          chmod 600 ~/.ssh/sourceforge
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          export GIT_SSH_COMMAND='ssh -i ~/.ssh/sourceforge -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes'
+          trap 'rm -f ~/.ssh/sourceforge' EXIT
+          git clone --bare "https://github.com/${SOURCE_REPO}.git" mirror.git
+          cd mirror.git
+          git push 'ssh://markdownee@git.code.sf.net/p/markdownee/code' 'refs/heads/*:refs/heads/*' 'refs/tags/*:refs/tags/*'
