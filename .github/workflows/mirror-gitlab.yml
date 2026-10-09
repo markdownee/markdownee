@@ -1,0 +1,36 @@
+name: Mirror to GitLab
+on:
+  push:
+    branches: ['**']
+    tags: ['**']
+  workflow_dispatch:
+  schedule:
+    - cron: '17 */6 * * *'
+permissions:
+  contents: read
+concurrency:
+  group: gitlab-mirror
+  cancel-in-progress: false
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Mirror branches and tags
+        env:
+          MIRROR_KEY: ${{ secrets.GITLAB_MIRROR_SSH_KEY }}
+          KNOWN_HOSTS: ${{ vars.GITLAB_KNOWN_HOSTS }}
+          SOURCE_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          test -n "$MIRROR_KEY"
+          test -n "$KNOWN_HOSTS"
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$MIRROR_KEY" > ~/.ssh/gitlab
+          chmod 600 ~/.ssh/gitlab
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          export GIT_SSH_COMMAND='ssh -i ~/.ssh/gitlab -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes'
+          trap 'rm -f ~/.ssh/gitlab' EXIT
+          git clone --bare "https://github.com/${SOURCE_REPO}.git" mirror.git
+          cd mirror.git
+          git push 'ssh://git@gitlab.com/markdownee/markdownee.git' 'refs/heads/*:refs/heads/*' 'refs/tags/*:refs/tags/*'
