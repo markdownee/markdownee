@@ -771,16 +771,12 @@ async function emitServedMarkdown(
   }
   const { extracted, html } = rendered;
 
-  if (opts.deduplication === 'aggressive') {
-    const text = extracted.dedupeText;
-    if (text.length > 0) {
-      const { hash } = computeContentInfo(text);
-      if (opts.seenContentHashes.has(hash)) {
-        log.info(`Skipping ${url} — duplicate content hash`);
-        return false;
-      }
-      opts.seenContentHashes.add(hash);
-    }
+  if (
+    opts.deduplication === 'aggressive' &&
+    checkAndRecordContent(extracted.dedupeText, opts.seenContentHashes)
+  ) {
+    log.info(`Skipping ${url} — duplicate content hash`);
+    return false;
   }
 
   const { hash: rawHtmlHash, length: rawHtmlLength } = computeContentInfo(html);
@@ -833,16 +829,12 @@ async function emitExtractedHtml(
     args.checkCancelled,
   );
 
-  if (opts.deduplication === 'aggressive') {
-    const text = extracted.dedupeText;
-    if (text.length > 0) {
-      const { hash } = computeContentInfo(text);
-      if (opts.seenContentHashes.has(hash)) {
-        log.info(`Skipping ${url} — duplicate content hash`);
-        return false;
-      }
-      opts.seenContentHashes.add(hash);
-    }
+  if (
+    opts.deduplication === 'aggressive' &&
+    checkAndRecordContent(extracted.dedupeText, opts.seenContentHashes)
+  ) {
+    log.info(`Skipping ${url} — duplicate content hash`);
+    return false;
   }
 
   args.checkCancelled?.();
@@ -857,6 +849,15 @@ async function emitExtractedHtml(
     ...(images !== undefined ? { images } : {}),
   });
   return true;
+}
+
+/** Report repeated nonempty body text, recording the hash on its first occurrence. */
+function checkAndRecordContent(text: string, seenContentHashes: Set<string>): boolean {
+  if (text.length === 0) return false;
+  const { hash } = computeContentInfo(text);
+  if (seenContentHashes.has(hash)) return true;
+  seenContentHashes.add(hash);
+  return false;
 }
 
 function checkAndRecordCanonical(
@@ -1062,16 +1063,12 @@ export function createHandler(opts: HandlerOpts): RequestHandler<PlaywrightCrawl
     );
     const formats = extracted.formats;
 
-    if (opts.deduplication === 'aggressive') {
-      const extractedText = extracted.dedupeText;
-      if (extractedText.length > 0) {
-        const { hash: contentHash } = computeContentInfo(extractedText);
-        if (opts.seenContentHashes.has(contentHash)) {
-          log.info(`Skipping ${url} — duplicate content hash`);
-          return;
-        }
-        opts.seenContentHashes.add(contentHash);
-      }
+    if (
+      opts.deduplication === 'aggressive' &&
+      checkAndRecordContent(extracted.dedupeText, opts.seenContentHashes)
+    ) {
+      log.info(`Skipping ${url} — duplicate content hash`);
+      return;
     }
 
     checkCancelled();
@@ -1378,16 +1375,12 @@ export function createCheerioHandler(opts: HandlerOpts): RequestHandler<CheerioC
     );
     const formats = extracted.formats;
 
-    if (opts.deduplication === 'aggressive') {
-      const extractedText = extracted.dedupeText;
-      if (extractedText.length > 0) {
-        const { hash: contentHash } = computeContentInfo(extractedText);
-        if (opts.seenContentHashes.has(contentHash)) {
-          log.info(`Skipping ${url} — duplicate content hash`);
-          return;
-        }
-        opts.seenContentHashes.add(contentHash);
-      }
+    if (
+      opts.deduplication === 'aggressive' &&
+      checkAndRecordContent(extracted.dedupeText, opts.seenContentHashes)
+    ) {
+      log.info(`Skipping ${url} — duplicate content hash`);
+      return;
     }
 
     checkCancelled();
@@ -1965,16 +1958,12 @@ export function createAdaptiveHandler(
       }
     }
 
-    if (opts.deduplication === 'aggressive') {
-      const extractedText = extracted.dedupeText;
-      if (extractedText.length > 0) {
-        const { hash: contentHash } = computeContentInfo(extractedText);
-        if (opts.seenContentHashes.has(contentHash)) {
-          log.info(`Skipping ${url} — duplicate content hash`);
-          return;
-        }
-        opts.seenContentHashes.add(contentHash);
-      }
+    if (
+      opts.deduplication === 'aggressive' &&
+      checkAndRecordContent(extracted.dedupeText, opts.seenContentHashes)
+    ) {
+      log.info(`Skipping ${url} — duplicate content hash`);
+      return;
     }
 
     checkCancelled();

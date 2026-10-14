@@ -21,6 +21,7 @@ detection; conflicting declarations can produce no formats.
 Output selectors are `txt`, `markdown`, `html`, and `minified-html`; structured
 results use `minifiedHtml`. Captured `original` HTML is a sink concern. Input limits
 and validation errors propagate; ordinary extraction fallback is reported in messages.
+XML and XML-TEI are not supported output formats.
 
 Served-Markdown parsers are re-exported here, but their HTML still requires the
 `cleanPage()` boundary before conversion. For the supported application API and

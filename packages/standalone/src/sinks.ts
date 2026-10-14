@@ -6,7 +6,7 @@ import {
   type Sink,
   warnDangerousRoutes,
 } from '@markdownee/crawler';
-import type { Dataset, KeyValueStore } from 'crawlee';
+import { CriticalError, type Dataset, type KeyValueStore } from 'crawlee';
 
 /**
  * Sink that writes each extracted page to a Crawlee dataset and, per the route
@@ -35,10 +35,9 @@ export function createCrawleeStorageSink(opts: {
     try {
       const data = await buildSuccessRecord(result, { kvs: kvsLike, routes });
       await dataset.pushData(data);
-    } catch (err) {
-      process.stderr.write(
-        `[storage] Warning: storage write failed for ${result.url}: ${err instanceof Error ? err.message : String(err)}\n`,
-      );
+    } catch {
+      // Storage is a run failure, not a retryable page failure. Raw adapter errors can carry secrets.
+      throw new CriticalError('Persistent storage write failed.');
     }
   };
 }

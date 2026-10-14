@@ -1,3 +1,11 @@
+// SPDX-License-Identifier: Apache-2.0
+// Attribute helper and image rule derived from Turndown v7.2.4 (MIT), revision
+// fb7a865ef5eba4081dfd4e20a894a61ef7a2edca:
+//   src/commonmark-rules.js
+//   https://github.com/mixmark-io/turndown/blob/fb7a865ef5eba4081dfd4e20a894a61ef7a2edca/src/commonmark-rules.js
+// Copyright (c) 2017 Dom Christie
+// Modified: added TypeScript types and src-less image alternatives.
+
 import { gfm } from '@joplin/turndown-plugin-gfm';
 import TurndownService from 'turndown';
 import type { DomElement } from './dom-node.js';

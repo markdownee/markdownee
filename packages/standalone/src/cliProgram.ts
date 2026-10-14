@@ -291,7 +291,7 @@ function addSinglePageOptions(cmd: Command): Command {
       new Option('--mode <mode>', cliOptionDescription('mode'))
         .choices(MODE_CHOICES)
         .argParser(parseMode)
-        .default('balanced'),
+        .default(s.mode.def.defaultValue),
     )
     .addOption(
       new Option('--image-handling <mode>', cliOptionDescription('image-handling'))

@@ -96,7 +96,7 @@ export const MAX_MARKDOWN_BYTES = 256_000;
  */
 const MAX_MARKDOWN_TASK_ITEMS = 4_000;
 
-/** Advertised alternates examined for one page, newest-first in document order. */
+/** Advertised alternates examined for one page, in first-seen order. */
 const MAX_ALTERNATE_CANDIDATES = 3;
 
 /** Content types whose body may be Markdown. `text/plain` always needs the sniff. */

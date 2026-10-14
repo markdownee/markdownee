@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const DIRECTORY = path.dirname(fileURLToPath(import.meta.url));
 const PACKAGES = {
   markdownee: ["schema", "conversion", "extraction", "crawler", "standalone", "apify-actor"],
   trafilaturacore: ["standalone"],
@@ -10,7 +10,10 @@ const PACKAGES = {
 const STABLE_VERSION = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/;
 
 /** @param {string} mode @param {{root?: string, tag?: string, product?: string}} options */
-export function checkReleaseFamily(mode, { root = ROOT, tag, product } = {}) {
+export function checkReleaseFamily(
+  mode,
+  { root = path.resolve(DIRECTORY, mode === "tools" ? "../../../.." : ".."), tag, product } = {},
+) {
   if (mode !== "tools" && !Object.hasOwn(PACKAGES, mode)) {
     throw new Error("expected tools, markdownee, or trafilaturacore");
   }

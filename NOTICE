@@ -20,6 +20,39 @@ accompanying THIRD-PARTY-NOTICES.txt covers the redistributed production closure
   is file-level copyleft: the unmodified Ghostery source files retain their
   MPL-2.0 license; this product's own code remains under Apache-2.0.
 
+Turndown 7.2.4
+  License: MIT
+  Source:  https://github.com/mixmark-io/turndown
+  Revision: fb7a865ef5eba4081dfd4e20a894a61ef7a2edca
+  Source file: src/commonmark-rules.js
+  https://github.com/mixmark-io/turndown/blob/fb7a865ef5eba4081dfd4e20a894a61ef7a2edca/src/commonmark-rules.js
+  The attribute helper and adapted image rule in packages/conversion/src/markdown.ts
+  derive from this source. Modified: added TypeScript types and src-less image
+  alternatives. The full upstream license follows, reproduced verbatim from
+  https://github.com/mixmark-io/turndown/blob/fb7a865ef5eba4081dfd4e20a894a61ef7a2edca/LICENSE
+
+MIT License
+
+Copyright (c) 2017 Dom Christie
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
 ================================================================================
 Filter-list data loaded at runtime (NOT bundled in this distribution)
 ================================================================================
@@ -29,7 +62,7 @@ lists, which are fetched over the network on first use and cached to a temporary
 file. They are NOT vendored into this distribution's artifacts.
 
   EasyList, EasyPrivacy
-  Fanboy's Annoyance list, Fanboy's Cookiemonster list
+  Fanboy's Annoyance list (includes the Cookie List)
     License:     dual GPL-3.0-or-later AND CC-BY-SA-3.0
     Used branch: CC-BY-SA-3.0
     Attribution: The EasyList authors (https://easylist.to/)

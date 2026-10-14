@@ -48,8 +48,6 @@ const PROPERTY_KEY_ORDER: readonly string[] = [
   'required',
 ];
 
-const TYPES_WITH_TOP_LEVEL_ITEMS_STRIPPED = new Set(['array']);
-
 export function toApifyInputSchema(
   schema: z.ZodObject,
   opts: ToApifyInputSchemaOptions = {},
@@ -151,11 +149,7 @@ function normalizeProperty(raw: Record<string, unknown>): Record<string, unknown
     out.items !== null &&
     Array.isArray((out.items as Record<string, unknown>).enum);
 
-  if (
-    type !== undefined &&
-    TYPES_WITH_TOP_LEVEL_ITEMS_STRIPPED.has(type) &&
-    !isArraySelectWithEnum
-  ) {
+  if (type === 'array' && !isArraySelectWithEnum) {
     delete out.items;
   }
 

@@ -9,8 +9,7 @@ import type { Page } from 'playwright';
 const FILTER_LISTS = [
   'https://easylist-downloads.adblockplus.org/easylist.txt',
   'https://easylist-downloads.adblockplus.org/easyprivacy.txt',
-  'https://secure.fanboy.co.nz/fanboy-annoyance.txt',
-  'https://secure.fanboy.co.nz/fanboy-cookiemonster.txt',
+  'https://easylist-downloads.adblockplus.org/fanboy-annoyance.txt',
 ];
 
 let blockerPromise: Promise<PlaywrightBlocker> | undefined;

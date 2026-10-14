@@ -22,3 +22,8 @@ Core's cleaning stage before rendering; `formatSecuredHtml()` is not a substitut
 For application usage, see the
 [npm library guide](https://www.markdownee.com/help/npm-library/)
 and [output formats](https://www.markdownee.com/formats/).
+
+The attribute helper and adapted image rule in [src/markdown.ts](src/markdown.ts)
+derive from [Turndown v7.2.4](https://github.com/mixmark-io/turndown/blob/fb7a865ef5eba4081dfd4e20a894a61ef7a2edca/src/commonmark-rules.js)
+(MIT), copyright Dom Christie. See [NOTICE](../../NOTICE) for the source attribution
+and full license text.

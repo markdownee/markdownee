@@ -146,7 +146,7 @@ const SINGLE_PAGE: CliSurfaceOption[] = [
     flag: '--markdown-discovery',
     field: 'markdownDiscovery',
     kind: 'enum',
-    values: ['off', 'alternate', 'negotiate', 'probe'],
+    values: MarkdowneeInput.shape.markdownDiscovery.unwrap().options,
     description:
       'Choose the content source for all formats: off uses HTML; alternate follows advertised ' +
       'same-origin Markdown links; negotiate also requests text/markdown through Accept; ' +
@@ -275,7 +275,7 @@ const SINGLE_PAGE: CliSurfaceOption[] = [
     flag: '--mode',
     field: 'mode',
     kind: 'enum',
-    values: ['precision', 'balanced', 'recall', 'keep'],
+    values: MarkdowneeInput.shape.mode.unwrap().options,
     description:
       'Extraction mode: precision (less noise), balanced (default), recall (more content), or keep (no boilerplate removal, clean HTML only)',
     defaultLabel: '"balanced"',
@@ -286,7 +286,7 @@ const SINGLE_PAGE: CliSurfaceOption[] = [
     flag: '--image-handling',
     field: 'imageHandling',
     kind: 'enum',
-    values: ['exclude', 'alt-text', 'resolved-url', 'save'],
+    values: MarkdowneeInput.shape.imageHandling.unwrap().options,
     description:
       'Image handling: exclude (default, remove images), alt-text (textual stand-in, no URL), ' +
       'resolved-url (keep images with resolved absolute URLs), or the save MODE (multi-page: ' +
@@ -329,7 +329,7 @@ const SINGLE_PAGE: CliSurfaceOption[] = [
     flag: '--link-handling',
     field: 'linkHandling',
     kind: 'enum',
-    values: ['include', 'exclude'],
+    values: MarkdowneeInput.shape.linkHandling.unwrap().options,
     description:
       'Link handling: include (default, inline links) or exclude (keep anchor text, drop URL)',
     defaultLabel: '"include"',
@@ -340,7 +340,7 @@ const SINGLE_PAGE: CliSurfaceOption[] = [
     flag: '--table-handling',
     field: 'tableHandling',
     kind: 'enum',
-    values: ['include', 'exclude'],
+    values: MarkdowneeInput.shape.tableHandling.unwrap().options,
     description:
       'Table handling: include (default) or exclude (drop table subtrees including cell text)',
     defaultLabel: '"include"',
@@ -351,7 +351,7 @@ const SINGLE_PAGE: CliSurfaceOption[] = [
     flag: '--comment-handling',
     field: 'commentHandling',
     kind: 'enum',
-    values: ['include', 'exclude'],
+    values: MarkdowneeInput.shape.commentHandling.unwrap().options,
     description:
       'User-comment section handling (forum/blog comments, not <!-- --> markup): include (default) ' +
       'or exclude detected comment containers',
@@ -371,7 +371,7 @@ const SINGLE_PAGE: CliSurfaceOption[] = [
     flag: '--output-layout',
     field: 'outputLayout',
     kind: 'enum',
-    values: ['minimal', 'standard', 'enhanced'],
+    values: MarkdowneeInput.shape.outputLayout.unwrap().options,
     description: 'Generated output layout: minimal (default), standard, or enhanced',
     defaultLabel: '"minimal"',
     subcommands: ['crawl', 'fetch'],
@@ -530,7 +530,7 @@ const CRAWL: CliSurfaceOption[] = [
     flag: '--deduplication',
     field: 'deduplication',
     kind: 'enum',
-    values: ['minimal', 'standard', 'aggressive'],
+    values: MarkdowneeInput.shape.deduplication.unwrap().options,
     description: 'Deduplication level: minimal, standard (default), or aggressive',
     subcommands: ['crawl'],
   },

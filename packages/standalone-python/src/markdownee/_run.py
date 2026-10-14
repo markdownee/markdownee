@@ -339,7 +339,7 @@ async def _run(
         warnings: list[str] = []
         if options.image_handling == "save" and directory is not None:
 
-            async def fetch_image(url: str) -> tuple[bytes, str]:
+            async def fetch_image(url: str) -> bytes:
                 """Use this crawl's session/proxy channel with an explicit byte cap."""
                 current = url
                 for _ in range(6):
@@ -371,7 +371,7 @@ async def _run(
                             if size > options.max_image_bytes:
                                 raise MarkdowneeError("image exceeds max_image_bytes")
                             chunks.append(chunk)
-                        return b"".join(chunks), response.headers.get("content-type", "")
+                        return b"".join(chunks)
                 raise MarkdowneeError("image exceeded redirect limit")
 
             fragment, images, warnings = await save_images(

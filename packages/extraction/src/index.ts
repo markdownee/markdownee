@@ -341,7 +341,7 @@ export class ContentExtractor {
     return content === undefined ? null : { content, format };
   }
 
-  /** Extract metadata from `html`. Returns an all-`null` `Metadata` on failure. */
+  /** Extract page metadata; validation and resource-limit errors propagate from `cleanPage`. */
   async extractMetadata(html: string, url?: string): Promise<Metadata> {
     const page = await this.cleanPage(html, url);
     return page.metadata;

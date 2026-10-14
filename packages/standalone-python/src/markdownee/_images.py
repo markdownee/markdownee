@@ -118,9 +118,9 @@ def sanitize_svg(data: bytes) -> bytes:
             local = etree.QName(key).localname
             unsafe = local not in _SVG_ATTRIBUTES
             if local == "href":
-                unsafe = not re.fullmatch(r"#[A-Za-z_][\w.-]*", value)
+                unsafe = unsafe or not re.fullmatch(r"#[A-Za-z_][\w.-]*", value)
             if "url" in value.lower():
-                unsafe = not re.fullmatch(r"url\(#[A-Za-z_][\w.-]*\)", value)
+                unsafe = unsafe or not re.fullmatch(r"url\(#[A-Za-z_][\w.-]*\)", value)
             if unsafe:
                 del node.attrib[key]
     return etree.tostring(root, encoding="utf-8")
@@ -148,7 +148,7 @@ def _raster_loader(data: bytes) -> str | None:
     return None
 
 
-def encode_image(data: bytes, content_type: str, options: Options) -> EncodedImage:
+def encode_image(data: bytes, options: Options) -> EncodedImage:
     """Read first-frame raster data with libvips and strip metadata on encoding."""
     if len(data) > options.max_image_bytes:
         return EncodedImage(warning="image exceeds max_image_bytes")
@@ -188,7 +188,7 @@ def encode_image(data: bytes, content_type: str, options: Options) -> EncodedIma
 async def save_images(
     fragment: str,
     *,
-    fetch: Callable[[str], Awaitable[tuple[bytes, str]]],
+    fetch: Callable[[str], Awaitable[bytes]],
     directory: Path,
     options: Options,
     originals: bool,
@@ -207,8 +207,8 @@ async def save_images(
         try:
             validate_url(url)
             if url not in cache:
-                data, content_type = await fetch(url)
-                encoded = await asyncio.to_thread(encode_image, data, content_type, options)
+                data = await fetch(url)
+                encoded = await asyncio.to_thread(encode_image, data, options)
                 cache[url] = encoded, data
             encoded, data = cache[url]
         except Exception:
